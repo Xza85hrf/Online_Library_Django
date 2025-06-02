@@ -1,0 +1,38 @@
+# Core Django dependencies
+Django>=4.2,<5.0
+django-crispy-forms>=2.0
+crispy-bootstrap5>=0.7  # Correct package name
+django-filter>=22.1
+
+# Database
+psycopg2-binary>=2.9.5; sys_platform != 'win32'
+psycopg2>=2.9.5; sys_platform == 'win32'
+
+# Image processing
+Pillow>=9.0.0
+
+# Data processing and visualization
+xlsxwriter>=3.0.0
+openpyxl>=3.0.0
+pandas>=1.5.0
+matplotlib>=3.5.0
+
+# REST API
+djangorestframework>=3.13.0
+
+# Rich text editing
+django-ckeditor>=6.3.0
+
+# User authentication and permissions
+django-allauth>=0.50.0
+
+# Basic requirements only - more specialized packages can be installed manually
+# as needed for specific features
+
+# Note: The following packages are optional and can be installed manually if needed:
+# - Flux AI and torch (for AI image generation)
+# - Celery and Redis (for asynchronous tasks)
+# - pytest and related packages (for testing)
+# - black and isort (for code formatting)
+# - Sphinx (for documentation)
+

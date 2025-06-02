@@ -1,0 +1,15 @@
+# Core Django dependencies - essential for running the project
+Django>=4.2,<5.0
+django-crispy-forms>=2.0
+crispy-bootstrap5>=0.7
+django-filter>=22.1
+
+# Image processing
+Pillow>=9.0.0
+
+# Data processing (needed for reports)
+xlsxwriter>=3.0.0
+openpyxl>=3.0.0
+
+# REST API
+djangorestframework>=3.13.0

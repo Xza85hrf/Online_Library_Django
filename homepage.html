@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+
+
+
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strona główna - Biblioteka Online</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    
+    
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-book me-2"></i>Biblioteka Online
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Strona główna</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/books/">Katalog książek</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/authors/">Autorzy</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/publishers/">Wydawnictwa</a>
+                    </li>
+                    
+                </ul>
+                <ul class="navbar-nav">
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login/">Zaloguj się</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/register/">Zarejestruj się</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container my-4">
+        <!-- Messages -->
+        
+
+        
+<!-- Hero Section -->
+<section class="hero-section bg-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Witaj w Bibliotece Online</h1>
+                <p class="lead mb-4">Odkrywaj, wypożyczaj i czytaj tysiące książek w jednym miejscu. Twoja przygoda z czytaniem zaczyna się tutaj!</p>
+                <div class="d-flex gap-3">
+                    <a href="/books/" class="btn btn-light btn-lg">Przeglądaj katalog</a>
+                    
+                        <a href="/login/" class="btn btn-outline-light btn-lg">Zaloguj się</a>
+                    
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block">
+                <img src="/static/images/library-hero.svg" alt="Library illustration" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Books Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="section-title text-center mb-5">Polecane książki</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            
+                <div class="col">
+                    <div class="card h-100 book-card">
+                        <div class="book-cover-container">
+                            
+                                <img src="/static/images/default-book-cover.jpg" class="card-img-top book-cover" alt="Sense and Sensibility">
+                            
+                            <div class="book-availability-badge badge-available">
+                                Dostępna
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title book-title">Sense and Sensibility</h5>
+                            <p class="card-text book-authors">
+                                
+                                    <a href="/authors/3/" class="text-decoration-none">Jane Austen</a>
+                                
+                            </p>
+                            <p class="card-text book-description">Sense and Sensibility is a novel by Jane Austen, published in 1811. It was published anonymously; B…</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <div class="d-grid">
+                                <a href="/books/8/" class="btn btn-outline-primary">Zobacz szczegóły</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="col">
+                    <div class="card h-100 book-card">
+                        <div class="book-cover-container">
+                            
+                                <img src="/static/images/default-book-cover.jpg" class="card-img-top book-cover" alt="A Clash of Kings">
+                            
+                            <div class="book-availability-badge badge-available">
+                                Dostępna
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title book-title">A Clash of Kings</h5>
+                            <p class="card-text book-authors">
+                                
+                                    <a href="/authors/2/" class="text-decoration-none">George R.R. Martin</a>
+                                
+                            </p>
+                            <p class="card-text book-description">A Clash of Kings is the second novel in A Song of Ice and Fire, an epic fantasy series by American …</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <div class="d-grid">
+                                <a href="/books/7/" class="btn btn-outline-primary">Zobacz szczegóły</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="col">
+                    <div class="card h-100 book-card">
+                        <div class="book-cover-container">
+                            
+                                <img src="/static/images/default-book-cover.jpg" class="card-img-top book-cover" alt="Harry Potter and the Chamber of Secrets">
+                            
+                            <div class="book-availability-badge badge-available">
+                                Dostępna
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title book-title">Harry Potter and the Chamber of Secrets</h5>
+                            <p class="card-text book-authors">
+                                
+                                    <a href="/authors/1/" class="text-decoration-none">J.K. Rowling</a>
+                                
+                            </p>
+                            <p class="card-text book-description">The second novel in the Harry Potter series, written by J. K. Rowling.</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <div class="d-grid">
+                                <a href="/books/6/" class="btn btn-outline-primary">Zobacz szczegóły</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="col">
+                    <div class="card h-100 book-card">
+                        <div class="book-cover-container">
+                            
+                                <img src="/static/images/default-book-cover.jpg" class="card-img-top book-cover" alt="Murder on the Orient Express">
+                            
+                            <div class="book-availability-badge badge-available">
+                                Dostępna
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title book-title">Murder on the Orient Express</h5>
+                            <p class="card-text book-authors">
+                                
+                                    <a href="/authors/5/" class="text-decoration-none">Agatha Christie</a>
+                                
+                            </p>
+                            <p class="card-text book-description">Murder on the Orient Express is a detective novel by English writer Agatha Christie featuring the B…</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <div class="d-grid">
+                                <a href="/books/5/" class="btn btn-outline-primary">Zobacz szczegóły</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="col">
+                    <div class="card h-100 book-card">
+                        <div class="book-cover-container">
+                            
+                                <img src="/static/images/default-book-cover.jpg" class="card-img-top book-cover" alt="The Shining">
+                            
+                            <div class="book-availability-badge badge-available">
+                                Dostępna
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title book-title">The Shining</h5>
+                            <p class="card-text book-authors">
+                                
+                                    <a href="/authors/4/" class="text-decoration-none">Stephen King</a>
+                                
+                            </p>
+                            <p class="card-text book-description">The Shining centers on the life of Jack Torrance, a struggling writer and recovering alcoholic who …</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <div class="d-grid">
+                                <a href="/books/4/" class="btn btn-outline-primary">Zobacz szczegóły</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="col">
+                    <div class="card h-100 book-card">
+                        <div class="book-cover-container">
+                            
+                                <img src="/static/images/default-book-cover.jpg" class="card-img-top book-cover" alt="Pride and Prejudice">
+                            
+                            <div class="book-availability-badge badge-available">
+                                Dostępna
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title book-title">Pride and Prejudice</h5>
+                            <p class="card-text book-authors">
+                                
+                                    <a href="/authors/3/" class="text-decoration-none">Jane Austen</a>
+                                
+                            </p>
+                            <p class="card-text book-description">Pride and Prejudice follows the character development of Elizabeth Bennet, the dynamic protagonist …</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <div class="d-grid">
+                                <a href="/books/3/" class="btn btn-outline-primary">Zobacz szczegóły</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+        </div>
+        <div class="text-center mt-4">
+            <a href="/books/" class="btn btn-primary">Zobacz wszystkie książki</a>
+        </div>
+    </div>
+</section>
+
+<!-- Popular Authors Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="section-title text-center mb-5">Popularni autorzy</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            
+                <div class="col">
+                    <div class="card h-100 author-card">
+                        <div class="author-photo-container">
+                            
+                                <img src="/static/images/default-author.jpg" class="card-img-top author-photo" alt="J.K. Rowling">
+                            
+                        </div>
+                        <div class="card-body text-center">
+                            <h5 class="card-title author-name">J.K. Rowling</h5>
+                            <p class="card-text text-muted">
+                                
+                                    2 
+                                    
+                                        książki
+                                    
+                                    w bibliotece
+                                
+                            </p>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <div class="d-grid">
+                                <a href="/authors/1/" class="btn btn-outline-primary">Zobacz profil</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="col">
+                    <div class="card h-100 author-card">
+                        <div class="author-photo-container">
+                            
+                                <img src="/static/images/default-author.jpg" class="card-img-top author-photo" alt="George R.R. Martin">
+                            
+                        </div>
+                        <div class="card-body text-center">
+                            <h5 class="card-title author-name">George R.R. Martin</h5>
+                            <p class="card-text text-muted">
+                                
+                                    2 
+                                    
+                                        książki
+                                    
+                                    w bibliotece
+                                
+                            </p>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <div class="d-grid">
+                                <a href="/authors/2/" class="btn btn-outline-primary">Zobacz profil</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="col">
+                    <div class="card h-100 author-card">
+                        <div class="author-photo-container">
+                            
+                                <img src="/static/images/default-author.jpg" class="card-img-top author-photo" alt="Jane Austen">
+                            
+                        </div>
+                        <div class="card-body text-center">
+                            <h5 class="card-title author-name">Jane Austen</h5>
+                            <p class="card-text text-muted">
+                                
+                                    2 
+                                    
+                                        książki
+                                    
+                                    w bibliotece
+                                
+                            </p>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <div class="d-grid">
+                                <a href="/authors/3/" class="btn btn-outline-primary">Zobacz profil</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="col">
+                    <div class="card h-100 author-card">
+                        <div class="author-photo-container">
+                            
+                                <img src="/static/images/default-author.jpg" class="card-img-top author-photo" alt="Stephen King">
+                            
+                        </div>
+                        <div class="card-body text-center">
+                            <h5 class="card-title author-name">Stephen King</h5>
+                            <p class="card-text text-muted">
+                                
+                                    1 
+                                    
+                                        książka
+                                    
+                                    w bibliotece
+                                
+                            </p>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <div class="d-grid">
+                                <a href="/authors/4/" class="btn btn-outline-primary">Zobacz profil</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+        </div>
+        <div class="text-center mt-4">
+            <a href="/authors/" class="btn btn-primary">Zobacz wszystkich autorów</a>
+        </div>
+    </div>
+</section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-light text-center text-lg-start mt-5">
+        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+            &copy; 2025 Biblioteka Online. Wszelkie prawa zastrzeżone.
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="/static/js/script.js"></script>
+    
+    
+</body>
+</html>
