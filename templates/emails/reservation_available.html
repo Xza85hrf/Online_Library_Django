@@ -1,0 +1,23 @@
+{% extends "emails/email_base.html" %}
+
+{% block content %}
+<h2>Zarezerwowana książka jest dostępna</h2>
+
+<p>Witaj {{ user.first_name }},</p>
+
+<p>Mamy przyjemność poinformować, że zarezerwowana przez Ciebie książka jest już dostępna do wypożyczenia.</p>
+
+<div class="book-details">
+    <h3>Szczegóły rezerwacji:</h3>
+    <p><strong>Tytuł:</strong> {{ book.title }}</p>
+    <p><strong>Autor:</strong> {% for author in book.authors.all %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+    <p><strong>Data rezerwacji:</strong> {{ reservation_date|date:"d.m.Y" }}</p>
+    <p><strong>Rezerwacja ważna do:</strong> {{ expiry_date|date:"d.m.Y" }}</p>
+</div>
+
+<p>Prosimy o odbiór książki w ciągu 3 dni od otrzymania tego powiadomienia. Po tym czasie rezerwacja może zostać anulowana.</p>
+
+<a href="http://localhost:8000/books/{{ book.id }}/" class="button">Zobacz szczegóły książki</a>
+
+<p>Dziękujemy za korzystanie z naszej biblioteki!</p>
+{% endblock %}

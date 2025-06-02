@@ -1,0 +1,288 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Wszystkie książki - Biblioteka Online{% endblock %}
+
+{% block content %}
+<div class="container-xl py-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-4 mb-3">{{ title|default:"Wszystkie książki" }}</h1>
+            <p class="lead text-muted">Przeglądaj naszą kolekcję książek</p>
+        </div>
+        <div class="col-md-4">
+            <form method="get" action="{% url 'book_list' %}" class="mb-3">
+                <!-- Preserve existing filters -->
+                {% if author_id %}<input type="hidden" name="author" value="{{ author_id }}">{% endif %}
+                {% if publisher_id %}<input type="hidden" name="publisher" value="{{ publisher_id }}">{% endif %}
+                {% if genre %}<input type="hidden" name="genre" value="{{ genre }}">{% endif %}
+                {% if availability %}<input type="hidden" name="availability" value="{{ availability }}">{% endif %}
+                {% if language %}<input type="hidden" name="language" value="{{ language }}">{% endif %}
+                
+                <div class="input-group">
+                    <input type="text" class="form-control" name="q" value="{{ query }}" placeholder="Szukaj książek..." aria-label="Szukaj książek">
+                    <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
+                </div>
+            </form>
+            
+            <div class="d-flex justify-content-end">
+                <div class="dropdown ms-2">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        Sortuj: {% if sort == 'title_asc' %}Tytuł (A-Z){% elif sort == 'title_desc' %}Tytuł (Z-A){% elif sort == 'date_desc' %}Najnowsze{% elif sort == 'date_asc' %}Najstarsze{% else %}Domyślnie{% endif %}
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                        <li><a class="dropdown-item {% if sort == 'title_asc' %}active{% endif %}" href="{% url 'book_list' %}?{% if query %}q={{ query }}&{% endif %}{% if genre %}genre={{ genre }}&{% endif %}{% if author_id %}author={{ author_id }}&{% endif %}{% if publisher_id %}publisher={{ publisher_id }}&{% endif %}{% if availability %}availability={{ availability }}&{% endif %}{% if language %}language={{ language }}&{% endif %}sort=title_asc">Tytuł (A-Z)</a></li>
+                        <li><a class="dropdown-item {% if sort == 'title_desc' %}active{% endif %}" href="{% url 'book_list' %}?{% if query %}q={{ query }}&{% endif %}{% if genre %}genre={{ genre }}&{% endif %}{% if author_id %}author={{ author_id }}&{% endif %}{% if publisher_id %}publisher={{ publisher_id }}&{% endif %}{% if availability %}availability={{ availability }}&{% endif %}{% if language %}language={{ language }}&{% endif %}sort=title_desc">Tytuł (Z-A)</a></li>
+                        <li><a class="dropdown-item {% if sort == 'date_desc' %}active{% endif %}" href="{% url 'book_list' %}?{% if query %}q={{ query }}&{% endif %}{% if genre %}genre={{ genre }}&{% endif %}{% if author_id %}author={{ author_id }}&{% endif %}{% if publisher_id %}publisher={{ publisher_id }}&{% endif %}{% if availability %}availability={{ availability }}&{% endif %}{% if language %}language={{ language }}&{% endif %}sort=date_desc">Najnowsze</a></li>
+                        <li><a class="dropdown-item {% if sort == 'date_asc' %}active{% endif %}" href="{% url 'book_list' %}?{% if query %}q={{ query }}&{% endif %}{% if genre %}genre={{ genre }}&{% endif %}{% if author_id %}author={{ author_id }}&{% endif %}{% if publisher_id %}publisher={{ publisher_id }}&{% endif %}{% if availability %}availability={{ availability }}&{% endif %}{% if language %}language={{ language }}&{% endif %}sort=date_asc">Najstarsze</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Filtruj książki</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" action="{% url 'book_list' %}">
+                        <!-- Preserve existing filters -->
+                        {% if author_id %}<input type="hidden" name="author" value="{{ author_id }}">{% endif %}
+                        {% if publisher_id %}<input type="hidden" name="publisher" value="{{ publisher_id }}">{% endif %}
+                        
+                        <!-- Search Query -->
+                        <div class="mb-3">
+                            <label for="searchQuery" class="form-label">Szukaj</label>
+                            <input type="text" class="form-control" id="searchQuery" name="q" value="{{ query }}" placeholder="Tytuł, autor, ISBN...">
+                        </div>
+                        
+                        <hr>
+                        
+                        <!-- Categories/Genres -->
+                        <h6 class="card-subtitle mb-2 text-muted">Kategorie</h6>
+                        {% for genre_choice in genre_choices %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="genre" value="{{ genre_choice.0 }}" id="genre_{{ genre_choice.0 }}" {% if genre == genre_choice.0 %}checked{% endif %}>
+                            <label class="form-check-label" for="genre_{{ genre_choice.0 }}">{{ genre_choice.1 }}</label>
+                        </div>
+                        {% empty %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="genre" value="fiction" id="fiction" {% if genre == 'fiction' %}checked{% endif %}>
+                            <label class="form-check-label" for="fiction">Fikcja</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="genre" value="nonfiction" id="nonfiction" {% if genre == 'nonfiction' %}checked{% endif %}>
+                            <label class="form-check-label" for="nonfiction">Literatura faktu</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="genre" value="scifi" id="scifi" {% if genre == 'scifi' %}checked{% endif %}>
+                            <label class="form-check-label" for="scifi">Science Fiction</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="genre" value="mystery" id="mystery" {% if genre == 'mystery' %}checked{% endif %}>
+                            <label class="form-check-label" for="mystery">Kryminał</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="genre" value="biography" id="biography" {% if genre == 'biography' %}checked{% endif %}>
+                            <label class="form-check-label" for="biography">Biografia</label>
+                        </div>
+                        {% endfor %}
+                        
+                        <hr>
+                        
+                        <!-- Availability -->
+                        <h6 class="card-subtitle mb-2 text-muted">Dostępność</h6>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="availability" value="available" id="available" {% if availability == 'available' %}checked{% endif %}>
+                            <label class="form-check-label" for="available">Dostępne</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="availability" value="unavailable" id="unavailable" {% if availability == 'unavailable' %}checked{% endif %}>
+                            <label class="form-check-label" for="unavailable">Niedostępne</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="availability" value="" id="all_availability" {% if not availability %}checked{% endif %}>
+                            <label class="form-check-label" for="all_availability">Wszystkie</label>
+                        </div>
+                        
+                        <hr>
+                        
+                        <!-- Language -->
+                        <h6 class="card-subtitle mb-2 text-muted">Język</h6>
+                        <select class="form-select" name="language" id="language">
+                            <option value="">Wszystkie języki</option>
+                            <option value="english" {% if language == 'english' %}selected{% endif %}>Angielski</option>
+                            <option value="polish" {% if language == 'polish' %}selected{% endif %}>Polski</option>
+                            <option value="german" {% if language == 'german' %}selected{% endif %}>Niemiecki</option>
+                        </select>
+                        
+                        <div class="d-grid gap-2 mt-3">
+                            <button class="btn btn-primary" type="submit">Zastosuj filtry</button>
+                            <a href="{% url 'book_list' %}" class="btn btn-outline-secondary">Resetuj</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
+                {% if books %}
+                    {% for book in books %}
+                        <div class="col">
+                            <div class="card h-100 book-card">
+                                <div class="book-cover-container">
+                                    {% if book.cover %}
+                                        <img src="{{ book.cover.url }}" class="card-img-top book-cover" alt="{{ book.title }}">
+                                    {% else %}
+                                        <img src="{% static 'images/default-book-cover.jpg' %}" class="card-img-top book-cover" alt="{{ book.title }}">
+                                    {% endif %}
+                                    <div class="book-availability-badge {% if book.is_available %}badge-available{% else %}badge-unavailable{% endif %}">
+                                        {% if book.is_available %}Dostępna{% else %}Niedostępna{% endif %}
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title book-title">{{ book.title }}</h5>
+                                    <p class="card-text book-authors">
+                                        {% for author in book.authors.all %}
+                                            <a href="{% url 'author_detail' author.pk %}" class="text-decoration-none">{{ author.name }}</a>{% if not forloop.last %}, {% endif %}
+                                        {% endfor %}
+                                    </p>
+                                    <p class="card-text book-description">{{ book.description|truncatechars:100 }}</p>
+                                </div>
+                                <div class="card-footer bg-transparent border-top-0">
+                                    <div class="d-grid">
+                                        <a href="{% url 'book_detail' book.pk %}" class="btn btn-outline-primary">Zobacz szczegóły</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <h4 class="alert-heading">Nie znaleziono książek!</h4>
+                            <p>Aktualnie nie ma żadnych książek w bibliotece. Sprawdź ponownie później.</p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if page_obj.paginator.num_pages > 1 %}
+            <nav aria-label="Book pagination" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ request.path }}?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.author %}author={{ request.GET.author }}&{% endif %}{% if request.GET.publisher %}publisher={{ request.GET.publisher }}&{% endif %}page=1">&laquo; Pierwsza</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="{{ request.path }}?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.author %}author={{ request.GET.author }}&{% endif %}{% if request.GET.publisher %}publisher={{ request.GET.publisher }}&{% endif %}page={{ page_obj.previous_page_number }}">Poprzednia</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&laquo; Pierwsza</span>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">Poprzednia</span>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ request.path }}?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.author %}author={{ request.GET.author }}&{% endif %}{% if request.GET.publisher %}publisher={{ request.GET.publisher }}&{% endif %}page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ request.path }}?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.author %}author={{ request.GET.author }}&{% endif %}{% if request.GET.publisher %}publisher={{ request.GET.publisher }}&{% endif %}page={{ page_obj.next_page_number }}">Następna</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="{{ request.path }}?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.author %}author={{ request.GET.author }}&{% endif %}{% if request.GET.publisher %}publisher={{ request.GET.publisher }}&{% endif %}page={{ page_obj.paginator.num_pages }}">Ostatnia &raquo;</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">Następna</span>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">Ostatnia &raquo;</span>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .book-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .book-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .book-cover-container {
+        position: relative;
+        height: 250px;
+        overflow: hidden;
+    }
+    
+    .book-cover {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .book-availability-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+    
+    .badge-available {
+        background-color: #28a745;
+        color: white;
+    }
+    
+    .badge-unavailable {
+        background-color: #dc3545;
+        color: white;
+    }
+    
+    .book-title {
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+    
+    .book-authors {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-bottom: 10px;
+    }
+    
+    .book-description {
+        font-size: 0.9rem;
+        color: #495057;
+    }
+</style>
+{% endblock %}

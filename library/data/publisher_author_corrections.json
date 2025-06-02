@@ -1,0 +1,93 @@
+{
+    "publishers": {
+        "Oxford University Press": {
+            "description": "Oxford University Press (OUP) jest największym na świecie wydawnictwem uniwersyteckim i jednym z najstarszych, założonym w 1586 roku. Specjalizuje się w publikacjach akademickich, edukacyjnych i referencyjnych, wydając ponad 6000 tytułów rocznie w ponad 40 językach.",
+            "website": "https://global.oup.com/",
+            "founded_date": "1586-01-01"
+        },
+        "Kensington Publishing Corp.": {
+            "description": "Kensington Publishing Corp. to niezależne amerykańskie wydawnictwo założone w 1974 roku, specjalizujące się w literaturze popularnej, w tym romansach, thrillerach, książkach historycznych i literaturze faktu. Jest jednym z największych niezależnych wydawnictw w Stanach Zjednoczonych.",
+            "website": "https://www.kensingtonbooks.com/",
+            "founded_date": "1974-01-01"
+        },
+        "Houghton Mifflin Harcourt": {
+            "description": "Houghton Mifflin Harcourt (HMH) to amerykańskie wydawnictwo specjalizujące się w podręcznikach, materiałach edukacyjnych oraz literaturze dziecięcej i dorosłej. Powstało z połączenia Houghton Mifflin (zał. 1832) i Harcourt Publishing (zał. 1919) w 2007 roku.",
+            "website": "https://www.hmhco.com/",
+            "founded_date": "1832-01-01"
+        }
+    },
+    "authors": {
+        "Mark P. O. Morford": {
+            "bio": "Mark P. O. Morford był profesorem literatury klasycznej i ekspertem w dziedzinie mitologii greckiej i rzymskiej. Autor wielu publikacji akademickich, w tym bestsellerowego podręcznika 'Classical Mythology', który jest standardowym tekstem na wielu uniwersytetach. Jego prace są cenione za głęboką analizę i przystępne przedstawienie złożonych mitów klasycznych.",
+            "birth_date": "1929-01-01"
+        },
+        "Elizabeth Wayland Barber": {
+            "bio": "Elizabeth Wayland Barber jest amerykańską archeolożka i lingwistką, specjalizującą się w prehistorycznych tekstyliach i ubiorach. Jest autorką książki 'The Mummies of Urumchi', w której bada starożytne mumie odkryte w basenie Tarim w zachodniej części Chin. Jej badania rzucają nowe światło na historię migracji ludności w Azji Centralnej.",
+            "birth_date": "1940-01-01"
+        },
+        "Amy Tan": {
+            "bio": "Amy Tan jest amerykańską pisarką chińskiego pochodzenia, autorką bestsellerowych powieści, w tym 'The Kitchen God's Wife' i 'The Joy Luck Club'. Jej twórczość często eksploruje relacje matka-córka oraz doświadczenia chińskich imigrantów w Ameryce. Jej książki zostały przetłumaczone na ponad 35 języków i zdobyły liczne nagrody literackie.",
+            "birth_date": "1952-02-19"
+        },
+        "David Cordingly": {
+            "bio": "David Cordingly jest brytyjskim historykiem morskim, byłym kuratorem Narodowego Muzeum Morskiego w Greenwich. Jest autorem książki 'Under the Black Flag: The Romance and the Reality of Life Among the Pirates', która demistyfikuje popularne wyobrażenia o piratach i przedstawia realistyczny obraz życia piratów w złotym wieku piractwa. Jego prace są cenione za połączenie rzetelności historycznej z przystępnym stylem narracji.",
+            "birth_date": "1938-01-01"
+        },
+        "Robert Cowley": {
+            "bio": "Robert Cowley jest amerykańskim historykiem i redaktorem, założycielem i wieloletnim redaktorem naczelnym czasopisma 'MHQ: The Quarterly Journal of Military History'. Jest redaktorem i współautorem książki 'What If?: The World's Foremost Military Historians Imagine What Might Have Been', która przedstawia alternatywne scenariusze historyczne. Jego prace są cenione za innowacyjne podejście do historii wojskowości.",
+            "birth_date": "1934-01-01"
+        },
+        "Scott Turow": {
+            "bio": "Scott Turow jest amerykańskim pisarzem i prawnikiem, autorem bestsellerowych thrillerów prawniczych, w tym 'PLEADING GUILTY'. Przed karierą pisarską pracował jako prokurator federalny, co wpłynęło na realistyczne przedstawienie świata prawniczego w jego powieściach. Jego książki sprzedały się w ponad 30 milionach egzemplarzy na całym świecie i były wielokrotnie adaptowane na filmy.",
+            "birth_date": "1949-04-12"
+        },
+        "David Adams Richards": {
+            "bio": "David Adams Richards jest kanadyjskim pisarzem, autorem powieści 'Nights Below Station Street', która zdobyła prestiżową nagrodę Governor General's Award. Jego twórczość charakteryzuje się wnikliwym portretowaniem życia w małych miasteczkach Nowego Brunszwiku w Kanadzie, złożonymi postaciami i tematyką społeczną. Jest jednym z najbardziej cenionych współczesnych pisarzy kanadyjskich.",
+            "birth_date": "1950-10-17"
+        },
+        "Richard Bruce Wright": {
+            "bio": "Richard Bruce Wright (1937-2017) był kanadyjskim pisarzem, autorem powieści 'Clara Callan', która zdobyła prestiżowe nagrody literackie, w tym Giller Prize i Governor General's Award. Jego twórczość charakteryzuje się wnikliwą analizą psychologiczną postaci i osadzeniem akcji w realiach małych kanadyjskich miasteczek.",
+            "birth_date": "1937-01-01"
+        },
+        "Carlo D'Este": {
+            "bio": "Carlo D'Este jest amerykańskim historykiem wojskowości i byłym oficerem armii USA, specjalizującym się w II wojnie światowej. Autor wielu cenionych książek historycznych, w tym 'Decision in Normandy', 'Patton: A Genius for War' oraz biografii Winstona Churchilla. Jego prace wyróżniają się dokładnością badań i wnikliwą analizą strategii wojskowej.",
+            "birth_date": "1938-01-01"
+        },
+        "Gina Kolata": {
+            "bio": "Gina Kolata jest amerykańską dziennikarką naukową i pisarką, wieloletnią reporterką 'The New York Times' specjalizującą się w tematyce medycznej i naukowej. Autorka książki 'Flu: The Story of the Great Influenza Pandemic of 1918', która opisuje historię i wpływ pandemii grypy hiszpanki. Jej prace łączą rzetelność naukową z przystępnym stylem narracji.",
+            "birth_date": "1948-01-01"
+        },
+        "Alice Sebold": {
+            "bio": "Alice Sebold jest amerykańską pisarką, autorką bestsellerowej powieści 'The Lovely Bones' (2002), która została zekranizowana przez Petera Jacksona. Jej twórczość często porusza trudne tematy traumy i przemocy, czerpiąc częściowo z jej osobistych doświadczeń opisanych w pamiętniku 'Lucky'.",
+            "birth_date": "1963-05-06"
+        },
+        "Sheila Heti": {
+            "bio": "Sheila Heti jest kanadyjską pisarką i redaktorką, autorką eksperymentalnych powieści, w tym 'The Middle Stories' i 'How Should a Person Be?'. Jej twórczość łączy elementy fikcji, autobiografii i filozofii, badając granice między sztuką a życiem. Jest również współzałożycielką literackiego magazynu 'Trampoline Hall'.",
+            "birth_date": "1976-12-25"
+        },
+        "Victoria Helen Stone": {
+            "bio": "Victoria Helen Stone (pseudonim Victorii Dahl) jest amerykańską autorką thrillerów psychologicznych, w tym 'Jane Doe'. Jej powieści charakteryzują się silnymi kobiecymi bohaterkami, intensywną narracją i złożonymi wątkami psychologicznymi. Jej książki regularnie trafiają na listy bestsellerów i zdobywają uznanie krytyków.",
+            "birth_date": "1970-01-01"
+        },
+        "Loren D. Estleman": {
+            "bio": "Loren D. Estleman jest płodnym amerykańskim pisarzem, autorem ponad 80 powieści, w tym serii kryminałów o detektywie Amosie Walkerze (m.in. 'The Witchfinder'). Specjalizuje się w powieściach kryminalnych i westernach, zdobywając liczne nagrody literackie. Jego styl charakteryzuje się szczegółowymi opisami historycznymi i wyrazistymi postaciami.",
+            "birth_date": "1952-09-15"
+        },
+        "Robert Hendrickson": {
+            "bio": "Robert Hendrickson był amerykańskim pisarzem i leksykografem, autorem licznych książek popularnonaukowych, w tym 'More Cunning Than Man: A Social History of Rats and Man'. Specjalizował się w historii języka, etymologii i kulturowych aspektach codziennych zjawisk. Jego prace są cenione za połączenie rzetelności naukowej z przystępnym stylem.",
+            "birth_date": "1933-01-01"
+        },
+        "Julia Oliver": {
+            "bio": "Julia Oliver jest amerykańską pisarką z Alabamy, autorką powieści 'Goodbye to the Buttermilk Sky' oraz innych utworów osadzonych w realiach amerykańskiego Południa. Jej twórczość charakteryzuje się wnikliwym portretowaniem życia na prowincji, złożonymi postaciami kobiecymi i atmosferą nostalgii za minionymi czasami.",
+            "birth_date": "1930-01-01"
+        },
+        "John Grisham": {
+            "bio": "John Grisham jest jednym z najpopularniejszych amerykańskich pisarzy, autorem thrillerów prawniczych, w tym 'The Testament'. Przed karierą pisarską pracował jako prawnik, co wpłynęło na realistyczne przedstawienie świata prawniczego w jego powieściach. Jego książki sprzedały się w ponad 300 milionach egzemplarzy na całym świecie i były wielokrotnie adaptowane na filmy.",
+            "birth_date": "1955-02-08"
+        },
+        "Toni Morrison": {
+            "bio": "Toni Morrison (1931-2019) była amerykańską pisarką, redaktorką i profesorką, laureatką Nagrody Nobla w dziedzinie literatury (1993). Jej powieść 'Beloved' zdobyła Nagrodę Pulitzera i jest uważana za jedno z najważniejszych dzieł literatury amerykańskiej XX wieku. Jej twórczość porusza tematy rasy, tożsamości i historii Afroamerykanów, łącząc realizm z elementami magicznymi.",
+            "birth_date": "1931-02-18"
+        }
+    }
+}

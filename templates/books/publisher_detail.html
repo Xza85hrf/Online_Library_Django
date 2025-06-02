@@ -1,0 +1,404 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ publisher.name }} - Wydawnictwo - Biblioteka Online{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Strona główna</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'publisher_list' %}">Wydawnictwa</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ publisher.name|truncatewords:3 }}</li>
+        </ol>
+    </nav>
+    
+    <!-- Publisher Header -->
+    <div class="row mb-5">
+        <div class="col-md-3 text-center mb-4 mb-md-0">
+            {% if publisher.logo %}
+                <img src="{{ publisher.logo.url }}" class="img-fluid mb-3" alt="Logo {{ publisher.name }}" style="max-height: 150px; width: auto;">
+            {% else %}
+                <div class="d-flex align-items-center justify-content-center bg-light p-5" style="height: 150px;">
+                    <i class="fas fa-building fa-4x text-muted"></i>
+                </div>
+            {% endif %}
+            
+            <div class="mt-3">
+                <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#sharePublisherModal">
+                    <i class="fas fa-share-alt me-1"></i> Udostępnij
+                </button>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h1 class="h3 mb-2">{{ publisher.name }}</h1>
+                            {% if publisher.founded_year %}
+                            <p class="text-muted mb-3">
+                                <i class="far fa-calendar-alt me-2"></i> Założone w {{ publisher.founded_year }} roku
+                            </p>
+                            {% endif %}
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="publisherActions" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="publisherActions">
+                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#reportPublisherErrorModal"><i class="far fa-flag me-2"></i> Zgłoś błąd</a></li>
+                                {% if user.is_staff %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-warning" href="{% url 'publisher_update' publisher.id %}">
+                                    <i class="fas fa-edit me-2"></i> Edytuj wydawnictwo
+                                </a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    {% if publisher.website %}
+                    <p class="mb-3">
+                        <i class="fas fa-globe me-2"></i> 
+                        <a href="{{ publisher.website }}" target="_blank" rel="noopener noreferrer">
+                            {{ publisher.website|truncatechars:40 }}
+                        </a>
+                    </p>
+                    {% endif %}
+                    
+                    <div class="mb-4">
+                        <h5 class="mb-3">O wydawnictwie</h5>
+                        {% if publisher.description %}
+                            <div class="publisher-description">
+                                {{ publisher.description|linebreaks }}
+                            </div>
+                        {% else %}
+                            <p class="text-muted">Brak opisu wydawnictwa.</p>
+                        {% endif %}
+                    </div>
+                    
+                    {% if publisher.address or publisher.city or publisher.country %}
+                    <div class="mb-4">
+                        <h5 class="mb-3">Dane kontaktowe</h5>
+                        <address>
+                            {% if publisher.address %}
+                                <i class="fas fa-map-marker-alt me-2"></i> {{ publisher.address }}<br>
+                            {% endif %}
+                            {% if publisher.postal_code %}
+                                {{ publisher.postal_code }}
+                            {% endif %}
+                            {% if publisher.city %}
+                                {{ publisher.city }}<br>
+                            {% endif %}
+                            {% if publisher.country %}
+                                {{ publisher.country.get_name_display }}
+                            {% endif %}
+                        </address>
+                    </div>
+                    {% endif %}
+                    
+                    {% if publisher.email or publisher.phone %}
+                    <div class="row g-3">
+                        {% if publisher.email %}
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title"><i class="fas fa-envelope me-2"></i> Email</h6>
+                                    <a href="mailto:{{ publisher.email }}" class="text-decoration-none">
+                                        {{ publisher.email }}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if publisher.phone %}
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title"><i class="fas fa-phone-alt me-2"></i> Telefon</h6>
+                                    <a href="tel:{{ publisher.phone }}" class="text-decoration-none">
+                                        {{ publisher.phone }}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Publisher's Books -->
+    <div class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="h4 mb-0">Książki wydawnictwa</h2>
+            <a href="{% url 'book_list' %}?publisher={{ publisher.pk }}" class="btn btn-outline-primary btn-sm">
+                Zobacz wszystkie ({{ publisher.book_set.count }})
+            </a>
+        </div>
+        
+        {% if books %}
+            <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-4">
+                {% for book in books %}
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="position-relative">
+                            <a href="{% url 'book_detail' book.pk %}" class="text-decoration-none">
+                                {% if book.cover %}
+                                    <img src="{{ book.cover.url }}" class="card-img-top" alt="{{ book.title }}">
+                                {% else %}
+                                    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                        <i class="fas fa-book-open fa-3x text-muted"></i>
+                                    </div>
+                                {% endif %}
+                            </a>
+                            <div class="position-absolute top-0 end-0 p-2">
+                                <span class="badge bg-{{ book.available_copies|yesno:'success,danger' }}">
+                                    {% if book.available_copies > 0 %}Dostępna{% else %}Niedostępna{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="card-title">
+                                <a href="{% url 'book_detail' book.pk %}" class="text-decoration-none text-dark">
+                                    {{ book.title|truncatewords:5 }}
+                                </a>
+                            </h6>
+                            <p class="card-text small text-muted">
+                                {% for author in book.authors.all %}
+                                    {{ author.get_short_name }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            {% if books.paginator.num_pages > 1 %}
+            <nav aria-label="Pagination" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if books.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ request.path }}?page=1">&laquo; Pierwsza</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="{{ request.path }}?page={{ books.previous_page_number }}">Poprzednia</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&laquo; Pierwsza</span>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">Poprzednia</span>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in books.paginator.page_range %}
+                        {% if books.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > books.number|add:'-3' and num < books.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ request.path }}?page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if books.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ request.path }}?page={{ books.next_page_number }}">Następna</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="{{ request.path }}?page={{ books.paginator.num_pages }}">Ostatnia &raquo;</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">Następna</span>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">Ostatnia &raquo;</span>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            
+        {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i> Brak dostępnych książek tego wydawnictwa.
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Related Publishers -->
+    {% if related_publishers %}
+    <div class="mt-5 pt-4 border-top">
+        <h3 class="h4 mb-4">Podobne wydawnictwa</h3>
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-4">
+            {% for pub in related_publishers %}
+            <div class="col">
+                <div class="card h-100 text-center">
+                    <a href="{% url 'publisher_detail' pub.pk %}" class="text-decoration-none text-dark">
+                        <div class="p-4">
+                            {% if pub.logo %}
+                                <img src="{{ pub.logo.url }}" class="img-fluid" alt="{{ pub.name }}" style="max-height: 100px; width: auto;">
+                            {% else %}
+                                <div class="d-flex align-items-center justify-content-center bg-light" style="height: 100px;">
+                                    <i class="fas fa-building fa-3x text-muted"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="card-body p-2">
+                            <h6 class="card-title mb-0">{{ pub.name|truncatewords:3 }}</h6>
+                            <small class="text-muted">{{ pub.book_set.count }} książek</small>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Report Publisher Error Modal -->
+<div class="modal fade" id="reportPublisherErrorModal" tabindex="-1" aria-labelledby="reportPublisherErrorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title" id="reportPublisherErrorModalLabel">Zgłoś błąd</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reportPublisherErrorForm">
+                    <div class="mb-3">
+                        <label for="publisherErrorType" class="form-label">Rodzaj problemu</label>
+                        <select class="form-select" id="publisherErrorType" required>
+                            <option value="" selected disabled>Wybierz rodzaj problemu</option>
+                            <option value="incorrect_info">Nieprawidłowe informacje</option>
+                            <option value="missing_info">Brakujące informacje</option>
+                            <option value="logo_issue">Problem z logo</option>
+                            <option value="other">Inny problem</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="publisherErrorDescription" class="form-label">Opis problemu</label>
+                        <textarea class="form-control" id="publisherErrorDescription" rows="4" required placeholder="Opisz szczegółowo napotkany problem..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="publisherErrorContactEmail" class="form-label">Adres email (opcjonalnie)</label>
+                        <input type="email" class="form-control" id="publisherErrorContactEmail" placeholder="twój@email.com">
+                        <div class="form-text">Podaj swój email, jeśli chcesz otrzymać informację o rozwiązaniu problemu.</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                <button type="button" class="btn btn-primary" id="submitPublisherErrorReport">Wyślij zgłoszenie</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Share Publisher Modal -->
+<div class="modal fade" id="sharePublisherModal" tabindex="-1" aria-labelledby="sharePublisherModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sharePublisherModalLabel">Udostępnij wydawnictwo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="shareLink" class="form-label">Bezpośredni link</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="shareLink" 
+                               value="{{ request.scheme }}://{{ request.get_host }}{% url 'publisher_detail' publisher.pk %}" readonly>
+                        <button class="btn btn-outline-secondary" type="button" id="copyLinkBtn">
+                            <i class="far fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.scheme }}://{{ request.get_host }}{% url 'publisher_detail' publisher.pk %}" 
+                       target="_blank" class="btn btn-outline-primary">
+                        <i class="fab fa-facebook-f me-1"></i> Facebook
+                    </a>
+                    <a href="https://twitter.com/intent/tweet?url={{ request.scheme }}://{{ request.get_host }}{% url 'publisher_detail' publisher.pk %}&text=Sprawdź%20książki%20wydawnictwa%3A%20{{ publisher.name|urlencode }}" 
+                       target="_blank" class="btn btn-outline-info">
+                        <i class="fab fa-twitter me-1"></i> Twitter
+                    </a>
+                    <a href="mailto:?subject={{ publisher.name }} - Biblioteka Online&body=Sprawdź książki tego wydawnictwa: {{ request.scheme }}://{{ request.get_host }}{% url 'publisher_detail' publisher.pk %}" 
+                       class="btn btn-outline-secondary">
+                        <i class="fas fa-envelope me-1"></i> Email
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/report-problem.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Copy link to clipboard
+        const copyLinkBtn = document.getElementById('copyLinkBtn');
+        if (copyLinkBtn) {
+            copyLinkBtn.addEventListener('click', function() {
+                const shareLink = document.getElementById('shareLink');
+                shareLink.select();
+                document.execCommand('copy');
+                
+                // Change button text temporarily
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-check"></i> Skopiowano!';
+                this.classList.remove('btn-outline-secondary');
+                this.classList.add('btn-outline-success');
+                
+                // Reset button after 2 seconds
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.classList.remove('btn-outline-success');
+                    this.classList.add('btn-outline-secondary');
+                }, 2000);
+            });
+        }
+        
+        // Handle read more/less for description
+        const descElement = document.querySelector('.publisher-description');
+        if (descElement && descElement.textContent.trim().split(/\s+/).length > 100) {
+            const fullText = descElement.innerHTML;
+            const words = descElement.textContent.trim().split(/\s+/);
+            const shortText = words.slice(0, 100).join(' ') + '...';
+            
+            descElement.innerHTML = shortText;
+            
+            const readMoreBtn = document.createElement('button');
+            readMoreBtn.className = 'btn btn-link p-0 ms-1';
+            readMoreBtn.textContent = 'Czytaj więcej';
+            readMoreBtn.addEventListener('click', function() {
+                descElement.innerHTML = fullText;
+                readMoreBtn.remove();
+            });
+            
+            descElement.parentNode.insertBefore(readMoreBtn, descElement.nextSibling);
+        }
+    });
+</script>
+{% endblock %}

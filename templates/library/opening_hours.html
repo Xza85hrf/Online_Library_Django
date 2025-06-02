@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Godziny otwarcia{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h1 class="mb-4">Godziny otwarcia</h1>
+            
+            <div class="card border-0 shadow-sm mb-5">
+                <div class="card-body p-5">
+                    <div class="text-center mb-5">
+                        <img src="{% static 'images/library-community.jpg' %}" alt="Library Building" class="img-fluid rounded shadow" style="max-height: 300px;">
+                    </div>
+                    
+                    <h2 class="h4 mb-4">Kiedy możesz nas odwiedzić</h2>
+                    <p class="lead mb-5">Nasza biblioteka jest otwarta przez większość dni w tygodniu. Poniżej znajdziesz szczegółowe informacje o godzinach otwarcia.</p>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Dzień tygodnia</th>
+                                    <th>Wypożyczalnia</th>
+                                    <th>Czytelnia</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Poniedziałek</td>
+                                    <td>9:00 - 19:00</td>
+                                    <td>8:00 - 20:00</td>
+                                </tr>
+                                <tr>
+                                    <td>Wtorek</td>
+                                    <td>9:00 - 19:00</td>
+                                    <td>8:00 - 20:00</td>
+                                </tr>
+                                <tr>
+                                    <td>Środa</td>
+                                    <td>9:00 - 19:00</td>
+                                    <td>8:00 - 20:00</td>
+                                </tr>
+                                <tr>
+                                    <td>Czwartek</td>
+                                    <td>9:00 - 19:00</td>
+                                    <td>8:00 - 20:00</td>
+                                </tr>
+                                <tr>
+                                    <td>Piątek</td>
+                                    <td>9:00 - 19:00</td>
+                                    <td>8:00 - 20:00</td>
+                                </tr>
+                                <tr>
+                                    <td>Sobota</td>
+                                    <td>10:00 - 16:00</td>
+                                    <td>10:00 - 18:00</td>
+                                </tr>
+                                <tr>
+                                    <td>Niedziela</td>
+                                    <td>Zamknięte</td>
+                                    <td>12:00 - 16:00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="alert alert-info mt-5">
+                        <h4 class="alert-heading"><i class="fas fa-info-circle me-2"></i>Informacja</h4>
+                        <p>W dni świąteczne biblioteka jest zamknięta. O ewentualnych zmianach w godzinach otwarcia informujemy na naszej stronie internetowej oraz w mediach społecznościowych.</p>
+                    </div>
+                    
+                    <h2 class="h4 mb-4 mt-5">Lokalizacja</h2>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <address>
+                                <strong>Biblioteka Online</strong><br>
+                                ul. Książkowa 123<br>
+                                00-001 Warszawa<br>
+                                <i class="fas fa-phone me-2"></i> (22) 123-45-67<br>
+                                <i class="fas fa-envelope me-2"></i> kontakt@biblioteka-online.pl
+                            </address>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="ratio ratio-16x9">
+                                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d156388.35438500528!2d20.896111271953126!3d52.233033999999995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x471ecc669a869f01%3A0x72f0be2a88ead3fc!2sWarszawa!5e0!3m2!1spl!2spl!4v1653308145352!5m2!1spl!2spl" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h2 class="h4 mb-4 mt-5">Kontakt</h2>
+                    <p>Jeśli masz pytania dotyczące godzin otwarcia lub chcesz umówić się na wizytę poza standardowymi godzinami, skontaktuj się z nami:</p>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-phone me-2"></i> (22) 123-45-67</li>
+                        <li><i class="fas fa-envelope me-2"></i> kontakt@biblioteka-online.pl</li>
+                        <li><i class="fab fa-facebook me-2"></i> facebook.com/biblioteka-online</li>
+                    </ul>
+                    
+                    <div class="text-center mt-5">
+                        <a href="{% url 'home' %}" class="btn btn-primary">Wróć do strony głównej</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

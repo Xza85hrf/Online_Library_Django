@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Autorzy - Biblioteka Online{% endblock %}
+
+{% block content %}
+<div class="container-xl py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Strona główna</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Autorzy</li>
+        </ol>
+    </nav>
+    
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h2 mb-3">Autorzy</h1>
+            <p class="text-muted mb-0">
+                Przeglądaj naszą kolekcję autorów i odkrywaj ich dzieła dostępne w naszej bibliotece.
+            </p>
+        </div>
+        <div class="col-md-4 d-flex align-items-center justify-content-md-end">
+            <div class="input-group" style="max-width: 300px;">
+                <input type="text" class="form-control" id="searchInput" placeholder="Szukaj autora...">
+                <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body py-2">
+            <form method="get" class="row g-3 align-items-center">
+                <div class="col-md-3">
+                    <label for="letterFilter" class="form-label mb-0">Pokaż na literę:</label>
+                    <select class="form-select" id="letterFilter" name="letter">
+                        <option value="">Wszystkie</option>
+                        {% for letter in 'AĄBCĆDEĘFGHIJKLŁMNŃOÓPRSŚTUWYZŹŻ' %}
+                            <option value="{{ letter }}" {% if current_letter == letter %}selected{% endif %}>{{ letter }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="sortBy" class="form-label mb-0">Sortuj według:</label>
+                    <select class="form-select" id="sortBy" name="sort">
+                        <option value="name_asc" {% if sort_by == 'name_asc' %}selected{% endif %}>Nazwa (A-Ż)</option>
+                        <option value="name_desc" {% if sort_by == 'name_desc' %}selected{% endif %}>Nazwa (Ż-A)</option>
+                        <option value="books_asc" {% if sort_by == 'books_asc' %}selected{% endif %}>Liczba książek (rosnąco)</option>
+                        <option value="books_desc" {% if sort_by == 'books_desc' %}selected{% endif %}>Liczba książek (malejąco)</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="itemsPerPage" class="form-label mb-0">Na stronie:</label>
+                    <select class="form-select" id="itemsPerPage" name="per_page">
+                        <option value="12" {% if per_page == 12 %}selected{% endif %}>12</option>
+                        <option value="24" {% if per_page == 24 %}selected{% endif %}>24</option>
+                        <option value="48" {% if per_page == 48 %}selected{% endif %}>48</option>
+                        <option value="96" {% if per_page == 96 %}selected{% endif %}>96</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter me-1"></i> Filtruj
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Alphabet Navigation -->
+    <div class="mb-4">
+        <div class="d-flex flex-wrap gap-1">
+            <a href="?" class="btn btn-sm btn-outline-secondary {% if not current_letter %}active{% endif %}">
+                Wszyscy
+            </a>
+            {% for letter in 'AĄBCĆDEĘFGHIJKLŁMNŃOÓPRSŚTUWYZŹŻ' %}
+                <a href="?letter={{ letter }}" class="btn btn-sm btn-outline-secondary {% if current_letter == letter %}active{% endif %}">
+                    {{ letter }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Authors Grid -->
+    {% if authors %}
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 row-cols-xl-7 g-4 mb-4">
+            {% for author in authors %}
+            <div class="col">
+                <div class="card h-100 text-center author-card">
+                    <a href="{% url 'author_detail' author.id %}" class="text-decoration-none text-dark">
+                        <div class="position-relative">
+                            {% if author.photo %}
+                                <img src="{{ author.photo.url }}" 
+                                     class="card-img-top rounded-circle p-4" 
+                                     alt="{{ author.get_full_name }}"
+                                     style="width: 100%; height: 200px; object-fit: cover;">
+                            {% else %}
+                                <div class="d-flex align-items-center justify-content-center bg-light rounded-circle mx-auto mt-4" 
+                                     style="width: 150px; height: 150px;">
+                                    <i class="fas fa-user fa-4x text-muted"></i>
+                                </div>
+                            {% endif %}
+                            {% if author.book_set.count > 0 %}
+                                <span class="position-absolute top-0 end-0 m-2 badge bg-primary rounded-pill">
+                                    {{ author.book_set.count }}
+                                </span>
+                            {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title mb-0">{{ author.name }}</h5>
+                            {% if author.date_of_birth or author.date_of_death %}
+                                <p class="text-muted small mb-0">
+                                    {% if author.date_of_birth %}
+                                        {{ author.date_of_birth|date:"Y" }}
+                                    {% endif %}
+                                    {% if author.date_of_death %}
+                                        - {{ author.date_of_death|date:"Y" }}
+                                    {% endif %}
+                                </p>
+                            {% endif %}
+                        </div>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav aria-label="Pagination" class="mb-5">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ request.path }}?page=1{% if current_letter %}&letter={{ current_letter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}{% if per_page %}&per_page={{ per_page }}{% endif %}">
+                            &laquo; Pierwsza
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="{{ request.path }}?page={{ page_obj.previous_page_number }}{% if current_letter %}&letter={{ current_letter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}{% if per_page %}&per_page={{ per_page }}{% endif %}">
+                            Poprzednia
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">&laquo; Pierwsza</span>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link">Poprzednia</span>
+                    </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ request.path }}?page={{ num }}{% if current_letter %}&letter={{ current_letter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}{% if per_page %}&per_page={{ per_page }}{% endif %}">
+                                {{ num }}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ request.path }}?page={{ page_obj.next_page_number }}{% if current_letter %}&letter={{ current_letter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}{% if per_page %}&per_page={{ per_page }}{% endif %}">
+                            Następna
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="{{ request.path }}?page={{ page_obj.paginator.num_pages }}{% if current_letter %}&letter={{ current_letter }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}{% if per_page %}&per_page={{ per_page }}{% endif %}">
+                            Ostatnia &raquo;
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">Następna</span>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link">Ostatnia &raquo;</span>
+                    </li>
+                {% endif %}
+            </ul>
+            <p class="text-center text-muted">
+                Pokazano {{ page_obj.start_index }}-{{ page_obj.end_index }} z {{ page_obj.paginator.count }} autorów
+            </p>
+        </nav>
+        {% endif %}
+        
+    {% else %}
+        <div class="alert alert-info">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-info-circle me-3 fa-2x"></i>
+                <div>
+                    <h5 class="alert-heading">Brak autorów</h5>
+                    <p class="mb-0">Nie znaleziono autorów spełniających wybrane kryteria wyszukiwania.</p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    
+    <!-- Featured Authors -->
+    {% if featured_authors %}
+    <div class="mt-5 pt-4 border-top">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="h4 mb-0">Polecani autorzy</h3>
+        </div>
+        <div class="row">
+            {% for author in featured_authors %}
+            <div class="col-md-3 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        {% if author.photo %}
+                            <img src="{{ author.photo.url }}" 
+                                 class="img-fluid rounded-circle mb-3" 
+                                 alt="{{ author.name }}"
+                                 style="max-height: 120px; max-width: 120px; object-fit: cover;">
+                        {% else %}
+                            <div class="d-flex align-items-center justify-content-center bg-light rounded-circle mx-auto mb-3" 
+                                 style="width: 120px; height: 120px;">
+                                <i class="fas fa-user fa-3x text-muted"></i>
+                            </div>
+                        {% endif %}
+                        <h5 class="card-title">{{ author.name }}</h5>
+                        <p class="text-muted small">{{ author.book_set.count }} książek</p>
+                        <a href="{% url 'author_detail' author.id %}" class="btn btn-sm btn-outline-primary">
+                            Zobacz książki
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        
+        function performSearch() {
+            const searchTerm = searchInput.value.trim();
+            if (searchTerm) {
+                window.location.href = `?q=${encodeURIComponent(searchTerm)}`;
+            }
+        }
+        
+        if (searchButton) {
+            searchButton.addEventListener('click', performSearch);
+        }
+        
+        if (searchInput) {
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    performSearch();
+                }
+            });
+        }
+        
+        // Auto-submit filters on change
+        const letterFilter = document.getElementById('letterFilter');
+        const sortBy = document.getElementById('sortBy');
+        const itemsPerPage = document.getElementById('itemsPerPage');
+        
+        if (letterFilter) {
+            letterFilter.addEventListener('change', function() {
+                this.form.submit();
+            });
+        }
+        
+        if (sortBy) {
+            sortBy.addEventListener('change', function() {
+                this.form.submit();
+            });
+        }
+        
+        if (itemsPerPage) {
+            itemsPerPage.addEventListener('change', function() {
+                this.form.submit();
+            });
+        }
+    });
+</script>
+{% endblock %}

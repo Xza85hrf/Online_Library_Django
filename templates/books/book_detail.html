@@ -1,0 +1,268 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load static %}
+
+{% block title %}{{ book.title }} - Biblioteka Online{% endblock %}
+
+{% block extra_css %}
+<style>
+    .book-cover {
+        max-height: 500px;
+        width: auto;
+        object-fit: contain;
+    }
+    .book-meta {
+        font-size: 0.9rem;
+    }
+    .book-meta i {
+        width: 20px;
+        text-align: center;
+        margin-right: 5px;
+    }
+    .author-avatar {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+    .rating-stars {
+        color: #ffc107;
+        font-size: 1.2rem;
+    }
+    .review-card {
+        transition: transform 0.2s;
+    }
+    .review-card:hover {
+        transform: translateY(-5px);
+    }
+    .similar-book-cover {
+        height: 200px;
+        object-fit: cover;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Strona główna</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'book_list' %}">Książki</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ book.title|truncatewords:5 }}</li>
+        </ol>
+    </nav>
+    
+    <!-- Book Details -->
+    <div class="row mb-5">
+        <!-- Book Cover -->
+        <div class="col-md-4 mb-4 mb-md-0">
+            <div class="card shadow-sm h-100">
+                {% if book.cover %}
+                    <img src="{{ book.cover.url }}" class="card-img-top book-cover p-3" alt="{{ book.title }}">
+                {% else %}
+                    <div class="d-flex align-items-center justify-content-center" style="height: 400px; background-color: #f8f9fa;">
+                        <i class="fas fa-book-open fa-5x text-muted"></i>
+                    </div>
+                {% endif %}
+                <div class="card-footer">
+                    <div class="d-grid gap-2">
+                        {% if book.available_copies > 0 %}
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'borrow_book' book.pk %}" class="btn btn-primary">
+                                    <i class="fas fa-book-reader me-2"></i> Wypożycz teraz
+                                </a>
+                                <a href="{% url 'reserve_book' book.pk %}" class="btn btn-outline-secondary">
+                                    <i class="far fa-calendar-plus me-2"></i> Zarezerwuj
+                                </a>
+                            {% else %}
+                                <a href="{% url 'login' %}?next={% url 'book_detail' book.pk %}" class="btn btn-primary">
+                                    <i class="fas fa-sign-in-alt me-2"></i> Zaloguj się, aby wypożyczyć
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            <button class="btn btn-secondary" disabled>
+                                <i class="fas fa-times-circle me-2"></i> Niedostępna
+                            </button>
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'reserve_book' book.pk %}" class="btn btn-outline-primary">
+                                    <i class="far fa-bell me-2"></i> Zarezerwuj, gdy będzie dostępna
+                                </a>
+                            {% else %}
+                                <a href="{% url 'login' %}?next={% url 'book_detail' book.pk %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-sign-in-alt me-2"></i> Zaloguj się, aby zarezerwować
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Book Information -->
+        <div class="col-md-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h1 class="card-title h3">{{ book.title }}</h1>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="bookActions" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bookActions">
+                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#reportProblemModal"><i class="far fa-flag me-2"></i> Zgłoś błąd</a></li>
+                                {% if user.is_staff %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-warning" href="{% url 'admin:library_book_change' book.id %}" target="_blank">
+                                    <i class="fas fa-edit me-2"></i> Edytuj w panelu admina
+                                </a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Authors -->
+                    <div class="mb-3">
+                        <p class="mb-1"><strong>Autorzy:</strong></p>
+                        <div class="d-flex flex-wrap gap-2 mb-3">
+                            {% for author in book.authors.all %}
+                                <a href="{% url 'author_detail' author.pk %}" class="text-decoration-none">
+                                    <div class="d-flex align-items-center bg-light rounded p-2">
+                                        {% if author.photo %}
+                                            <img src="{{ author.photo.url }}" class="author-avatar me-2" alt="{{ author.name }}">
+                                        {% else %}
+                                            <div class="bg-secondary text-white rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                        {% endif %}
+                                        <span>{{ author.name }}</span>
+                                    </div>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Book Metadata -->
+                    <div class="row book-meta mb-4">
+                        <div class="col-md-6">
+                            <p><i class="fas fa-building"></i> <strong>Wydawnictwo:</strong> 
+                                <a href="{% url 'publisher_detail' book.publisher.pk %}" class="text-decoration-none">{{ book.publisher.name }}</a>
+                            </p>
+                            <p><i class="far fa-calendar-alt"></i> <strong>Data wydania:</strong> {{ book.publication_date|date:"d.m.Y" }}</p>
+                            <p><i class="fas fa-language"></i> <strong>Język:</strong> {{ book.language }}</p>
+                            <p><i class="fas fa-barcode"></i> <strong>ISBN:</strong> {{ book.isbn }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><i class="fas fa-file-alt"></i> <strong>Liczba stron:</strong> {{ book.page_count }}</p>
+                            <p><i class="fas fa-tags"></i> <strong>Kategorie:</strong> 
+                                {% for category in book.categories.all %}
+                                    <a href="{% url 'book_list' %}?category={{ category.slug }}" class="badge bg-secondary text-decoration-none">{{ category.name }}</a>
+                                {% empty %}
+                                    <span class="text-muted">Brak kategorii</span>
+                                {% endfor %}
+                            </p>
+                            <p><i class="fas fa-book-open"></i> <strong>Dostępne egzemplarze:</strong> 
+                                <span class="badge {% if book.available_copies > 0 %}bg-success{% else %}bg-danger{% endif %}">{{ book.available_copies }} / {{ book.total_copies }}</span>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Book Description -->
+                    <div class="mb-4">
+                        <h5 class="card-subtitle mb-3">Opis książki</h5>
+                        <div class="book-description">
+                            {% if book.description %}
+                                {{ book.description|linebreaks }}
+                            {% else %}
+                                <p class="text-muted">Brak opisu dla tej książki.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Related Books -->
+    <div class="mb-5">
+        <h2 class="h4 mb-4">Podobne książki</h2>
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4">
+            {% for related_book in related_books %}
+            <div class="col">
+                <div class="card h-100">
+                    <a href="{% url 'book_detail' related_book.pk %}" class="text-decoration-none">
+                        {% if related_book.cover %}
+                            <img src="{{ related_book.cover.url }}" class="card-img-top similar-book-cover" alt="{{ related_book.title }}">
+                        {% else %}
+                            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <i class="fas fa-book-open fa-3x text-muted"></i>
+                            </div>
+                        {% endif %}
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title h6">
+                            <a href="{% url 'book_detail' related_book.pk %}" class="text-decoration-none text-dark">{{ related_book.title }}</a>
+                        </h5>
+                        <p class="card-text small text-muted">
+                            {% for author in related_book.authors.all %}
+                                {{ author.name }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> Brak podobnych książek.
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Report Problem Modal -->
+<div class="modal fade" id="reportProblemModal" tabindex="-1" aria-labelledby="reportProblemModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title" id="reportProblemModalLabel">Zgłoś błąd</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reportProblemForm">
+                    <div class="mb-3">
+                        <label for="problemType" class="form-label">Rodzaj problemu</label>
+                        <select class="form-select" id="problemType" required>
+                            <option value="" selected disabled>Wybierz rodzaj problemu</option>
+                            <option value="incorrect_info">Nieprawidłowe informacje</option>
+                            <option value="missing_info">Brakujące informacje</option>
+                            <option value="cover_issue">Problem z okładką</option>
+                            <option value="other">Inny problem</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="problemDescription" class="form-label">Opis problemu</label>
+                        <textarea class="form-control" id="problemDescription" rows="4" required placeholder="Opisz szczegółowo napotkany problem..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="contactEmail" class="form-label">Adres email (opcjonalnie)</label>
+                        <input type="email" class="form-control" id="contactEmail" placeholder="twój@email.com">
+                        <div class="form-text">Podaj swój email, jeśli chcesz otrzymać informację o rozwiązaniu problemu.</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                <button type="button" class="btn btn-primary" id="submitProblemReport">Wyślij zgłoszenie</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/report-problem.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load library_extras %}
+
+{% block title %}{{ title }} - Biblioteka Online{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">{{ title }}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center mb-3">
+                            {% if book.cover %}
+                                <img src="{{ book.cover.url }}" alt="{{ book.title }}" class="img-thumbnail me-3" style="width: 100px;">
+                            {% else %}
+                                <img src="/static/images/default-book-cover.jpg" alt="{{ book.title }}" class="img-thumbnail me-3" style="width: 100px;">
+                            {% endif %}
+                            <div>
+                                <h5 class="mb-1">{{ book.title }}</h5>
+                                <p class="text-muted mb-0">
+                                    {% for author in book.authors.all %}
+                                        {{ author.name }}{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label class="form-label">{{ form.rating.label }}</label>
+                            <div class="rating-stars mb-2">
+                                {% for value, label in form.rating.field.widget.choices %}
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="{{ form.rating.name }}" id="rating-{{ value }}" value="{{ value }}" 
+                                        {% if form.rating.value|stringformat:"i" == value|stringformat:"i" %}checked{% endif %}>
+                                    <label class="form-check-label" for="rating-{{ value }}">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= value %}
+                                                <i class="fas fa-star text-warning"></i>
+                                            {% else %}
+                                                <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% if form.rating.errors %}
+                                <div class="text-danger">{{ form.rating.errors }}</div>
+                            {% endif %}
+                            <div class="form-text text-muted">{{ form.rating.help_text }}</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.title.id_for_label }}" class="form-label">{{ form.title.label }}</label>
+                            {{ form.title|addclass:"form-control" }}
+                            {% if form.title.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.title.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% if form.title.help_text %}
+                            <small class="form-text text-muted">{{ form.title.help_text }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.content.id_for_label }}" class="form-label">{{ form.content.label }}</label>
+                            {{ form.content|addclass:"form-control" }}
+                            {% if form.content.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.content.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% if form.content.help_text %}
+                            <small class="form-text text-muted">{{ form.content.help_text }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Twoja recenzja zostanie przesłana do moderacji przed opublikowaniem.
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'book_detail' pk=book.id %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> Powrót
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> 
+                                {% if review %}Aktualizuj recenzję{% else %}Wyślij recenzję{% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Star rating hover effect
+        const ratingLabels = document.querySelectorAll('.rating-stars .form-check-label');
+        
+        ratingLabels.forEach(label => {
+            label.addEventListener('mouseenter', function() {
+                const stars = this.querySelectorAll('i');
+                stars.forEach(star => {
+                    star.classList.add('text-warning');
+                });
+            });
+            
+            label.addEventListener('mouseleave', function() {
+                const input = document.getElementById(this.getAttribute('for'));
+                if (!input.checked) {
+                    const stars = this.querySelectorAll('i');
+                    stars.forEach(star => {
+                        star.classList.remove('text-warning');
+                    });
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

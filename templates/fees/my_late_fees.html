@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-5 fw-bold">{% trans "My Late Fees" %}</h1>
+            <p class="lead text-muted">{% trans "Manage your late fees for overdue books" %}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'my_loans' %}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-2"></i>{% trans "Back to My Loans" %}
+            </a>
+        </div>
+    </div>
+
+    {% if late_fees %}
+        <div class="card mb-4">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">{% trans "Late Fee Summary" %}</h5>
+                {% if total_pending > 0 %}
+                    <span class="badge bg-danger fs-5">{% trans "Total Due:" %} {{ total_pending|floatformat:2 }} PLN</span>
+                {% else %}
+                    <span class="badge bg-success fs-5">{% trans "No Pending Fees" %}</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>{% trans "Book" %}</th>
+                        <th>{% trans "Days Overdue" %}</th>
+                        <th>{% trans "Amount" %}</th>
+                        <th>{% trans "Status" %}</th>
+                        <th>{% trans "Actions" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fee in late_fees %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'book_detail' pk=fee.loan.book.id %}" class="text-decoration-none">
+                                    {{ fee.loan.book.title }}
+                                </a>
+                            </td>
+                            <td>{{ fee.days_overdue }} {% trans "days" %}</td>
+                            <td>{{ fee.amount|floatformat:2 }} PLN</td>
+                            <td>
+                                {% if fee.payment_status == 'pending' %}
+                                    <span class="badge bg-warning">{% trans "Pending" %}</span>
+                                {% elif fee.payment_status == 'paid' %}
+                                    <span class="badge bg-success">{% trans "Paid" %}</span>
+                                {% elif fee.payment_status == 'waived' %}
+                                    <span class="badge bg-info">{% trans "Waived" %}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if fee.payment_status == 'pending' %}
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="{% url 'pay_late_fee' fee_id=fee.id %}" class="btn btn-primary">
+                                            <i class="fas fa-credit-card me-1"></i>{% trans "Pay" %}
+                                        </a>
+                                        <a href="{% url 'request_fee_waiver' fee_id=fee.id %}" class="btn btn-outline-secondary">
+                                            <i class="fas fa-hand-paper me-1"></i>{% trans "Request Waiver" %}
+                                        </a>
+                                    </div>
+                                {% elif fee.payment_status == 'paid' %}
+                                    <span class="text-success">
+                                        <i class="fas fa-check-circle me-1"></i>{% trans "Paid on" %} {{ fee.payment_date|date:"d.m.Y" }}
+                                    </span>
+                                {% elif fee.payment_status == 'waived' %}
+                                    <span class="text-info">
+                                        <i class="fas fa-info-circle me-1"></i>{% trans "Waived by staff" %}
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">{% trans "Late Fee Policy" %}</h5>
+            </div>
+            <div class="card-body">
+                <p>{% trans "Our late fee policy:" %}</p>
+                <ul>
+                    <li>{% trans "Late fees are charged at a rate of 0.50 PLN per day per book." %}</li>
+                    <li>{% trans "Fees are calculated from the day after the due date until the book is returned." %}</li>
+                    <li>{% trans "You can request a waiver for exceptional circumstances, which will be reviewed by library staff." %}</li>
+                    <li>{% trans "Unpaid late fees may result in suspension of borrowing privileges." %}</li>
+                </ul>
+            </div>
+        </div>
+    {% else %}
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+                <h3>{% trans "No Late Fees" %}</h3>
+                <p class="lead text-muted">{% trans "You don't have any late fees at the moment." %}</p>
+                <a href="{% url 'book_list' %}" class="btn btn-primary mt-3">
+                    <i class="fas fa-book me-2"></i>{% trans "Browse Books" %}
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,560 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ report.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>{{ report.title }}</h1>
+            <p class="lead">{{ report.description }}</p>
+            <p>
+                <span class="badge bg-primary">{{ report.get_report_type_display }}</span>
+                {% if report.is_scheduled %}
+                    <span class="badge bg-success">Zaplanowany</span>
+                {% endif %}
+            </p>
+        </div>
+        <div class="col-md-4 text-end">
+            <form method="post" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" name="run_report" class="btn btn-primary me-2">
+                    <i class="fas fa-play"></i> Uruchom Raport
+                </button>
+            </form>
+            <div class="btn-group">
+                <a href="{% url 'report_parameters' report.pk %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-cog"></i> Parametry
+                </a>
+                <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="visually-hidden">Eksportuj</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><h6 class="dropdown-header">Eksportuj jako</h6></li>
+                    <li><a class="dropdown-item" href="{% url 'export_report' report.pk %}?format=csv">CSV</a></li>
+                    <li><a class="dropdown-item" href="{% url 'export_report' report.pk %}?format=excel">Excel</a></li>
+                    <li><a class="dropdown-item" href="{% url 'export_report' report.pk %}?format=json">JSON</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Metadata -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Metadane</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <p class="text-muted mb-1">Utworzony przez</p>
+                    <p>{{ report.created_by.username }}</p>
+                </div>
+                <div class="col-md-3">
+                    <p class="text-muted mb-1">Data utworzenia</p>
+                    <p>{{ report.created_at|date:"d.m.Y H:i" }}</p>
+                </div>
+                <div class="col-md-3">
+                    <p class="text-muted mb-1">Ostatnia aktualizacja</p>
+                    <p>{{ report.updated_at|date:"d.m.Y H:i" }}</p>
+                </div>
+                <div class="col-md-3">
+                    <p class="text-muted mb-1">Ostatnie uruchomienie</p>
+                    <p>
+                        {% if report.last_run %}
+                            {{ report.last_run|date:"d.m.Y H:i" }}
+                        {% else %}
+                            <span class="text-muted">Nigdy</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Parameters -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Parametry</h5>
+            <a href="{% url 'report_parameters' report.pk %}" class="btn btn-sm btn-outline-primary">Edytuj Parametry</a>
+        </div>
+        <div class="card-body">
+            {% if report.parameters %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Parametr</th>
+                                <th>Wartość</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for key, value in report.parameters.items %}
+                                <tr>
+                                    <td>{{ key }}</td>
+                                    <td>{{ value }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted">Brak parametrów dla tego raportu.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Wyniki</h5>
+        </div>
+        <div class="card-body">
+            {% if report.results %}
+                {% if report.report_type == 'loan_history' %}
+                    <div class="mb-3">
+                        <h6>Podsumowanie</h6>
+                        <p>Całkowita liczba wypożyczeń: <strong>{{ report.results.total_loans }}</strong></p>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tytuł książki</th>
+                                    <th>Email użytkownika</th>
+                                    <th>Data wypożyczenia</th>
+                                    <th>Termin zwrotu</th>
+                                    <th>Data zwrotu</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for loan in report.results.loans %}
+                                    <tr>
+                                        <td>{{ loan.id }}</td>
+                                        <td>{{ loan.book__title }}</td>
+                                        <td>{{ loan.user__email }}</td>
+                                        <td>{{ loan.loan_date }}</td>
+                                        <td>{{ loan.due_date }}</td>
+                                        <td>{{ loan.return_date|default:"-" }}</td>
+                                        <td>{{ loan.status }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% elif report.report_type == 'popular_books' %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Najczęściej wypożyczane książki</h6>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Tytuł</th>
+                                            <th>Liczba wypożyczeń</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for book in report.results.most_borrowed %}
+                                            <tr>
+                                                <td>{{ book.title }}</td>
+                                                <td>{{ book.loan_count }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Najwyżej oceniane książki</h6>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Tytuł</th>
+                                            <th>Średnia ocena</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for book in report.results.top_rated %}
+                                            <tr>
+                                                <td>{{ book.title }}</td>
+                                                <td>{{ book.avg_rating|floatformat:1 }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                {% elif report.report_type == 'user_activity' %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Najbardziej aktywni czytelnicy</h6>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Email</th>
+                                            <th>Liczba wypożyczeń</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in report.results.most_active_borrowers %}
+                                            <tr>
+                                                <td>{{ user.email }}</td>
+                                                <td>{{ user.loan_count }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Najbardziej aktywni recenzenci</h6>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Email</th>
+                                            <th>Liczba recenzji</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in report.results.most_active_reviewers %}
+                                            <tr>
+                                                <td>{{ user.email }}</td>
+                                                <td>{{ user.review_count }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                {% elif report.report_type == 'overdue_books' %}
+                    <div class="mb-3">
+                        <h6>Podsumowanie</h6>
+                        <p>Całkowita liczba przetrzymanych książek: <strong>{{ report.results.total_overdue }}</strong></p>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6>Podział według dni przetrzymania</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Przedział</th>
+                                            <th>Liczba</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for interval, count in report.results.days_overdue_groups.items %}
+                                            <tr>
+                                                <td>{{ interval }}</td>
+                                                <td>{{ count }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <canvas id="overdueChart" width="400" height="300"></canvas>
+                        </div>
+                    </div>
+                    
+                    <h6>Lista przetrzymanych książek</h6>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tytuł książki</th>
+                                    <th>Email użytkownika</th>
+                                    <th>Termin zwrotu</th>
+                                    <th>Dni przetrzymania</th>
+                                    <th>Opłata za przetrzymanie</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for loan in report.results.overdue_loans %}
+                                    <tr>
+                                        <td>{{ loan.id }}</td>
+                                        <td>{{ loan.book_title }}</td>
+                                        <td>{{ loan.user_email }}</td>
+                                        <td>{{ loan.due_date }}</td>
+                                        <td>{{ loan.days_overdue }}</td>
+                                        <td>{{ loan.late_fee }} zł</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% elif report.report_type == 'revenue' %}
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card bg-success text-white">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">Całkowity przychód</h6>
+                                    <h2>{{ report.results.total_revenue|floatformat:2 }} zł</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-warning text-dark">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">Oczekujące</h6>
+                                    <h2>{{ report.results.total_pending|floatformat:2 }} zł</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">Opłacone</h6>
+                                    <h2>{{ report.results.total_paid|floatformat:2 }} zł</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-secondary text-white">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">Umorzone</h6>
+                                    <h2>{{ report.results.total_waived|floatformat:2 }} zł</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h6>Przychód miesięczny</h6>
+                            <canvas id="revenueChart" width="800" height="400"></canvas>
+                        </div>
+                    </div>
+                {% elif report.report_type == 'inventory' %}
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">Całkowita liczba książek</h6>
+                                    <h2>{{ report.results.total_books }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">Całkowita liczba egzemplarzy</h6>
+                                    <h2>{{ report.results.total_copies }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">Dostępne egzemplarze</h6>
+                                    <h2>{{ report.results.available_copies }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Książki z niską dostępnością</h6>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Tytuł</th>
+                                            <th>Dostępne</th>
+                                            <th>Całkowite</th>
+                                            <th>% Dostępności</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for book in report.results.low_availability %}
+                                            <tr>
+                                                <td>{{ book.title }}</td>
+                                                <td>{{ book.available_copies }}</td>
+                                                <td>{{ book.total_copies }}</td>
+                                                <td>
+                                                    {% widthratio book.available_copies book.total_copies 100 %}%
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Książki według wydawcy</h6>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Wydawca</th>
+                                            <th>Liczba książek</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for publisher in report.results.by_publisher %}
+                                            <tr>
+                                                <td>{{ publisher.name }}</td>
+                                                <td>{{ publisher.book_count }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <pre>{{ report.results|pprint }}</pre>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-info">
+                    Brak wyników. Uruchom raport, aby zobaczyć wyniki.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Exports -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Historia eksportów</h5>
+        </div>
+        <div class="card-body">
+            {% if exports %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Format</th>
+                                <th>Data utworzenia</th>
+                                <th>Utworzony przez</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for export in exports %}
+                                <tr>
+                                    <td>{{ export.get_format_display }}</td>
+                                    <td>{{ export.created_at|date:"d.m.Y H:i" }}</td>
+                                    <td>{{ export.created_by.username }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted">Brak historii eksportów.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        {% if report.results and report.report_type == 'overdue_books' %}
+            // Overdue Chart
+            var ctx = document.getElementById('overdueChart').getContext('2d');
+            var overdueData = {
+                labels: [
+                    {% for interval in report.results.days_overdue_groups.keys %}
+                        '{{ interval }}',
+                    {% endfor %}
+                ],
+                datasets: [{
+                    label: 'Liczba przetrzymanych książek',
+                    data: [
+                        {% for count in report.results.days_overdue_groups.values %}
+                            {{ count }},
+                        {% endfor %}
+                    ],
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(255, 99, 132, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            };
+            var overdueChart = new Chart(ctx, {
+                type: 'pie',
+                data: overdueData,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Podział według dni przetrzymania'
+                        }
+                    }
+                }
+            });
+        {% endif %}
+
+        {% if report.results and report.report_type == 'revenue' %}
+            // Revenue Chart
+            var ctx = document.getElementById('revenueChart').getContext('2d');
+            var revenueData = {
+                labels: [
+                    {% for item in report.results.monthly_breakdown %}
+                        '{{ item.month|date:"M Y" }}',
+                    {% endfor %}
+                ],
+                datasets: [{
+                    label: 'Przychód miesięczny (zł)',
+                    data: [
+                        {% for item in report.results.monthly_breakdown %}
+                            {{ item.total }},
+                        {% endfor %}
+                    ],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            };
+            var revenueChart = new Chart(ctx, {
+                type: 'bar',
+                data: revenueData,
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Przychód miesięczny z opłat za przetrzymanie'
+                        }
+                    }
+                }
+            });
+        {% endif %}
+    });
+</script>
+{% endblock %}

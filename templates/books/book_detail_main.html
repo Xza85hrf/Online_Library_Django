@@ -1,0 +1,400 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ book.title }} - Biblioteka Online{% endblock %}
+
+{% block extra_css %}
+<style>
+    .book-cover {
+        max-height: 500px;
+        width: auto;
+        object-fit: contain;
+    }
+    .book-meta {
+        font-size: 0.9rem;
+    }
+    .book-meta i {
+        width: 20px;
+        text-align: center;
+        margin-right: 5px;
+    }
+    .author-avatar {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+    .rating-stars {
+        color: #ffc107;
+        font-size: 1.2rem;
+    }
+    .review-card {
+        transition: transform 0.2s;
+    }
+    .review-card:hover {
+        transform: translateY(-5px);
+    }
+    .similar-book-cover {
+        height: 200px;
+        object-fit: cover;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Strona główna</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'book_list' %}">Książki</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ book.title|truncatewords:5 }}</li>
+        </ol>
+    </nav>
+    
+    <!-- Book Details -->
+    <div class="row mb-5">
+        <!-- Book Cover -->
+        <div class="col-md-4 mb-4 mb-md-0">
+            <div class="card shadow-sm h-100">
+                {% if book.cover %}
+                    <img src="{{ book.cover.url }}" class="card-img-top book-cover p-3" alt="{{ book.title }}">
+                {% else %}
+                    <div class="d-flex align-items-center justify-content-center" style="height: 400px; background-color: #f8f9fa;">
+                        <i class="fas fa-book-open fa-5x text-muted"></i>
+                    </div>
+                {% endif %}
+                <div class="card-footer text-center">
+                    <div class="btn-group w-100" role="group">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="tooltip" title="Dodaj do listy życzeń">
+                            <i class="far fa-heart"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="tooltip" title="Udostępnij">
+                            <i class="fas fa-share-alt"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="tooltip" title="Drukuj">
+                            <i class="fas fa-print"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#reportProblemModal" title="Zgłoś problem">
+                            <i class="fas fa-flag"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Book Info -->
+        <div class="col-md-8">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h1 class="h3 mb-2">{{ book.title }}</h1>
+                            <h2 class="h5 text-muted mb-3">
+                                {% for author in book.authors.all %}
+                                    <a href="{% url 'author_detail' author.slug %}" class="text-decoration-none">
+                                        {{ author.get_full_name }}{% if not forloop.last %}, {% endif %}
+                                    </a>
+                                {% endfor %}
+                            </h2>
+                        </div>
+                        <div class="text-end">
+                            {% if book.average_rating %}
+                            <div class="rating-stars mb-1">
+                                {% for i in "12345"|make_list %}
+                                    {% if forloop.counter <= book.average_rating|floatformat:0|add:0 %}
+                                        <i class="fas fa-star"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                                <small class="text-muted">({{ book.review_count }})</small>
+                            </div>
+                            {% endif %}
+                            <div class="mb-2">
+                                <span class="badge bg-{{ book.available|yesno:'success,danger' }}">
+                                    {{ book.available|yesno:"Dostępna,Niedostępna" }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="book-meta mb-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <p class="mb-1"><i class="fas fa-book"></i> <strong>Wydawnictwo:</strong> 
+                                    {% if book.publisher %}
+                                        <a href="{% url 'publisher_books' book.publisher.slug %}" class="text-decoration-none">
+                                            {{ book.publisher.name }}
+                                        </a>
+                                    {% else %}
+                                        Brak danych
+                                    {% endif %}
+                                </p>
+                                <p class="mb-1"><i class="far fa-calendar-alt"></i> <strong>Data wydania:</strong> 
+                                    {{ book.publication_date|date:"d.m.Y" }}
+                                </p>
+                                <p class="mb-1"><i class="fas fa-language"></i> <strong>Język:</strong> 
+                                    {{ book.get_language_display }}
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-1"><i class="fas fa-tags"></i> <strong>Gatunki:</strong> 
+                                    {% for genre in book.genres.all %}
+                                        <a href="{% url 'book_list' %}?genre={{ genre.slug }}" class="text-decoration-none">
+                                            {{ genre.name }}{% if not forloop.last %}, {% endif %}
+                                        </a>
+                                    {% endfor %}
+                                </p>
+                                <p class="mb-1"><i class="fas fa-file-alt"></i> <strong>Strony:</strong> 
+                                    {{ book.page_count|default:"Brak danych" }}
+                                </p>
+                                <p class="mb-1"><i class="fas fa-barcode"></i> <strong>ISBN:</strong> 
+                                    {{ book.isbn|default:"Brak" }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5 class="mb-3">Opis</h5>
+                        <div class="book-description">
+                            {% if book.description %}
+                                {{ book.description|linebreaks }}
+                            {% else %}
+                                <p class="text-muted">Brak opisu.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-2 d-md-flex mt-4">
+                        {% if book.available %}
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'book_detail' book.pk %}" class="btn btn-primary btn-lg me-md-2">
+                                    <i class="fas fa-book-reader me-2"></i> Wypożycz teraz
+                                </a>
+                                <button type="button" class="btn btn-outline-secondary btn-lg" data-bs-toggle="modal" data-bs-target="#reserveModal">
+                                    <i class="far fa-calendar-plus me-2"></i> Zarezerwuj
+                                </button>
+                            {% else %}
+                                <a href="{% url 'login' %}?next={% url 'book_detail' book.pk %}" class="btn btn-primary btn-lg me-md-2">
+                                    <i class="fas fa-sign-in-alt me-2"></i> Zaloguj się, aby wypożyczyć
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            <button class="btn btn-secondary btn-lg me-md-2" disabled>
+                                <i class="fas fa-times-circle me-2"></i> Niedostępna
+                            </button>
+                            {% if user.is_authenticated %}
+                                <button type="button" class="btn btn-outline-primary btn-lg" data-bs-toggle="modal" data-bs-target="#notifyModal">
+                                    <i class="far fa-bell me-2"></i> Powiadom o dostępności
+                                </button>
+                            {% else %}
+                                <a href="{% url 'login' %}?next={% url 'book_detail' book.pk %}" class="btn btn-outline-primary btn-lg">
+                                    <i class="fas fa-sign-in-alt me-2"></i> Zaloguj się, aby otrzymać powiadomienie
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tabs Section -->
+    {% include 'books/book_detail_tabs.html' %}
+    
+    <!-- Similar Books -->
+    {% if similar_books %}
+    <section class="mb-5">
+        <h3 class="mb-4">Podobne książki</h3>
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4">
+            {% for similar_book in similar_books %}
+            <div class="col">
+                <div class="card h-100">
+                    <div class="position-relative">
+                        <a href="{% url 'book_detail' similar_book.pk %}" class="text-decoration-none">
+                            {% if similar_book.cover %}
+                                <img src="{{ similar_book.cover.url }}" class="card-img-top" alt="{{ similar_book.title }}">
+                            {% else %}
+                                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="fas fa-book-open fa-3x text-muted"></i>
+                                </div>
+                            {% endif %}
+                        </a>
+                        <div class="position-absolute top-0 end-0 p-2">
+                            <span class="badge bg-{{ similar_book.available|yesno:'success,danger' }}">
+                                {{ similar_book.available|yesno:"Dostępna,Niedostępna" }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h6 class="card-title">
+                            <a href="{% url 'book_detail' similar_book.pk %}" class="text-decoration-none text-dark">
+                                {{ similar_book.title|truncatewords:5 }}
+                            </a>
+                        </h6>
+                        <p class="card-text small text-muted">
+                            {% for author in similar_book.authors.all %}
+                                {{ author.get_short_name }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </p>
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="rating-stars small">
+                                {% for i in "12345"|make_list %}
+                                    {% if forloop.counter <= similar_book.average_rating|floatformat:0|add:0 %}
+                                        <i class="fas fa-star"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <a href="{% url 'book_detail' similar_book.pk %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</div>
+
+<!-- Report Problem Modal -->
+<div class="modal fade" id="reportProblemModal" tabindex="-1" aria-labelledby="reportProblemModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title" id="reportProblemModalLabel">Zgłoś problem</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reportProblemForm">
+                    <div class="mb-3">
+                        <label for="problemType" class="form-label">Rodzaj problemu</label>
+                        <select class="form-select" id="problemType" required>
+                            <option value="" selected disabled>Wybierz rodzaj problemu</option>
+                            <option value="incorrect_info">Nieprawidłowe informacje</option>
+                            <option value="missing_info">Brakujące informacje</option>
+                            <option value="cover_issue">Problem z okładką</option>
+                            <option value="other">Inny problem</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="problemDescription" class="form-label">Opis problemu</label>
+                        <textarea class="form-control" id="problemDescription" rows="4" required placeholder="Opisz szczegółowo napotkany problem..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="contactEmail" class="form-label">Adres email (opcjonalnie)</label>
+                        <input type="email" class="form-control" id="contactEmail" placeholder="twój@email.com">
+                        <div class="form-text">Podaj swój email, jeśli chcesz otrzymać informację o rozwiązaniu problemu.</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                <button type="button" class="btn btn-primary" id="submitProblemReport">Wyślij zgłoszenie</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reserve Book Modal -->
+<div class="modal fade" id="reserveModal" tabindex="-1" aria-labelledby="reserveModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reserveModalLabel">Zarezerwuj książkę</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'reserve_book' book.slug %}">
+                <div class="modal-body">
+                    <p>Wybierz oddział, w którym chcesz odebrać książkę:</p>
+                    <select class="form-select" name="branch" required>
+                        <option value="" selected disabled>Wybierz oddział</option>
+                        {% for branch in branches %}
+                            <option value="{{ branch.id }}">{{ branch.name }} - {{ branch.address }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="form-text mt-2">
+                        Poinformujemy Cię mailowo, gdy książka będzie gotowa do odbioru.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                    <button type="submit" class="btn btn-primary">Zarezerwuj</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Notify Available Modal -->
+<div class="modal fade" id="notifyModal" tabindex="-1" aria-labelledby="notifyModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="notifyModalLabel">Powiadom o dostępności</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'notify_available' book.slug %}">
+                <div class="modal-body">
+                    <p>Otrzymasz powiadomienie na adres e-mail, gdy książka będzie dostępna.</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="notifyEmail" name="notify_email" checked>
+                        <label class="form-check-label" for="notifyEmail">
+                            Wyślij powiadomienie na adres: {{ user.email }}
+                        </label>
+                    </div>
+                    <div class="form-text mt-2">
+                        Twoje dane będą przetwarzane zgodnie z naszą polityką prywatności.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                    <button type="submit" class="btn btn-primary">Zapisz się do powiadomień</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/report-problem.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Handle tab anchor in URL
+        if (window.location.hash) {
+            const tabTrigger = document.querySelector(`[data-bs-target="${window.location.hash}"]`);
+            if (tabTrigger) {
+                const tab = new bootstrap.Tab(tabTrigger);
+                tab.show();
+            }
+        }
+        
+        // Handle tab click
+        const tabLinks = document.querySelectorAll('a[data-bs-toggle="tab"]');
+        tabLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                const target = this.getAttribute('data-bs-target');
+                if (target) {
+                    window.location.hash = target;
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

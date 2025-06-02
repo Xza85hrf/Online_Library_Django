@@ -1,0 +1,146 @@
+{% comment %}
+This file contains modernized sections that can be included in the homepage template
+to showcase the AI-generated illustrations and create a more visually appealing interface.
+{% endcomment %}
+
+{% load static %}
+
+<!-- Modern Hero Section -->
+<section class="hero-section bg-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Witaj w Bibliotece Online</h1>
+                <p class="lead mb-4">Odkrywaj, wypożyczaj i czytaj tysiące książek w jednym miejscu. Twoja przygoda z czytaniem zaczyna się tutaj!</p>
+                <div class="d-flex gap-3">
+                    <a href="{% url 'book_list' %}" class="btn btn-light btn-lg">Przeglądaj katalog</a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'my_loans' %}" class="btn btn-outline-light btn-lg">Moje wypożyczenia</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg">Zaloguj się</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block">
+                <img src="{% static 'images/library-hero.jpg' %}" alt="Modern Library" class="img-fluid rounded shadow-lg">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="section-title text-center mb-5">Nasze Usługi</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-4">
+                            <img src="{% static 'images/book-borrowing.jpg' %}" alt="Book Borrowing" class="img-fluid rounded" style="height: 180px; object-fit: cover;">
+                        </div>
+                        <h3 class="h4 mb-3">Wypożyczanie Książek</h3>
+                        <p class="text-muted">Wypożyczaj książki z naszej bogatej kolekcji i ciesz się czytaniem w domu.</p>
+                        <a href="{% url 'book_list' %}" class="btn btn-outline-primary mt-3">Przeglądaj katalog</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-4">
+                            <img src="{% static 'images/book-reading.jpg' %}" alt="Reading Area" class="img-fluid rounded" style="height: 180px; object-fit: cover;">
+                        </div>
+                        <h3 class="h4 mb-3">Czytelnia</h3>
+                        <p class="text-muted">Skorzystaj z naszej przestronnej czytelni, gdzie możesz czytać w ciszy i spokoju.</p>
+                        <a href="#" class="btn btn-outline-primary mt-3">Dowiedz się więcej</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-4">
+                            <img src="{% static 'images/library-community.jpg' %}" alt="Community Events" class="img-fluid rounded" style="height: 180px; object-fit: cover;">
+                        </div>
+                        <h3 class="h4 mb-3">Wydarzenia</h3>
+                        <p class="text-muted">Uczestnictwo w spotkaniach autorskich, dyskusjach literackich i warsztatach.</p>
+                        <a href="#" class="btn btn-outline-primary mt-3">Zobacz wydarzenia</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Digital Library Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <img src="{% static 'images/digital-library.jpg' %}" alt="Digital Library" class="img-fluid rounded shadow">
+            </div>
+            <div class="col-lg-6">
+                <h2 class="mb-4">Biblioteka Cyfrowa</h2>
+                <p class="lead mb-4">Odkryj naszą rosnącą kolekcję e-booków i zasobów cyfrowych dostępnych online.</p>
+                <ul class="list-unstyled mb-4">
+                    <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Dostęp do e-booków 24/7</li>
+                    <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Czytniki e-booków dostępne do wypożyczenia</li>
+                    <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Dostęp do cyfrowych baz danych i czasopism</li>
+                </ul>
+                <a href="#" class="btn btn-primary">Poznaj zasoby cyfrowe</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- User Testimonials Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="section-title text-center mb-5">Co mówią nasi czytelnicy</h2>
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <img src="{% static 'images/profile_pics/1_admin.jpg' %}" alt="User" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                            <div>
+                                <h5 class="mb-0">Anna Kowalska</h5>
+                                <p class="text-muted small mb-0">Stała czytelniczka</p>
+                            </div>
+                        </div>
+                        <p class="mb-0">"Biblioteka Online to moje ulubione miejsce do odkrywania nowych książek. Obsługa jest zawsze pomocna, a wybór tytułów imponujący!"</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <img src="{% static 'images/profile_pics/2_user.jpg' %}" alt="User" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                            <div>
+                                <h5 class="mb-0">Jan Nowak</h5>
+                                <p class="text-muted small mb-0">Student</p>
+                            </div>
+                        </div>
+                        <p class="mb-0">"Jako student, korzystam z biblioteki regularnie. System rezerwacji online jest bardzo wygodny i oszczędza mi dużo czasu!"</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <img src="{% static 'images/profile_pics/3_reader.jpg' %}" alt="User" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                            <div>
+                                <h5 class="mb-0">Maria Wiśniewska</h5>
+                                <p class="text-muted small mb-0">Nauczycielka</p>
+                            </div>
+                        </div>
+                        <p class="mb-0">"Uwielbiam wydarzenia organizowane przez bibliotekę. Spotkania z autorami są zawsze inspirujące i świetnie zorganizowane."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

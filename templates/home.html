@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Strona główna - Biblioteka Online{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section bg-primary text-white py-5">
+    <div class="container-xl">
+        <div class="row align-items-center g-0">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Witaj w Bibliotece Online</h1>
+                <p class="lead mb-4">Odkrywaj, wypożyczaj i czytaj tysiące książek w jednym miejscu. Twoja przygoda z czytaniem zaczyna się tutaj!</p>
+                <div class="d-flex gap-3">
+                    <a href="{% url 'book_list' %}" class="btn btn-light btn-lg">Przeglądaj katalog</a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'my_loans' %}" class="btn btn-outline-light btn-lg">Moje wypożyczenia</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg">Zaloguj się</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block">
+                <img src="{% static 'images/library-hero.jpg' %}" alt="Modern Library" class="img-fluid rounded shadow-lg">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Books Section -->
+<section class="py-5">
+    <div class="container-xl">
+        <h2 class="section-title text-center mb-5">Polecane książki</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for book in featured_books %}
+                <div class="col">
+                    <div class="card h-100 book-card">
+                        <div class="book-cover-container">
+                            {% if book.cover %}
+                                <img src="{{ book.cover.url }}" class="card-img-top book-cover" alt="{{ book.title }}">
+                            {% else %}
+                                <img src="{% static 'images/default-book-cover.jpg' %}" class="card-img-top book-cover" alt="{{ book.title }}">
+                            {% endif %}
+                            <div class="book-availability-badge {% if book.is_available %}badge-available{% else %}badge-unavailable{% endif %}">
+                                {% if book.is_available %}Dostępna{% else %}Niedostępna{% endif %}
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title book-title">{{ book.title }}</h5>
+                            <p class="card-text book-authors">
+                                {% for author in book.authors.all %}
+                                    <a href="{% url 'author_detail' author.pk %}" class="text-decoration-none">{{ author.name }}</a>{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </p>
+                            <p class="card-text book-description">{{ book.description|truncatechars:100 }}</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <div class="d-grid">
+                                <a href="{% url 'book_detail' book.pk %}" class="btn btn-outline-primary">Zobacz szczegóły</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <h4 class="alert-heading">Brak książek!</h4>
+                        <p>Aktualnie nie ma żadnych książek w bibliotece. Sprawdź ponownie później.</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'book_list' %}" class="btn btn-primary">Zobacz wszystkie książki</a>
+        </div>
+    </div>
+</section>
+
+<!-- Services Section -->
+<section class="py-5 bg-light">
+    <div class="container-xl">
+        <h2 class="section-title text-center mb-5">Nasze Usługi</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-4">
+                            <img src="{% static 'images/book-borrowing.jpg' %}" alt="Book Borrowing" class="img-fluid rounded" style="height: 180px; object-fit: cover;">
+                        </div>
+                        <h3 class="h4 mb-3">Wypożyczanie Książek</h3>
+                        <p class="text-muted">Wypożyczaj książki z naszej bogatej kolekcji i ciesz się czytaniem w domu.</p>
+                        <a href="{% url 'book_list' %}" class="btn btn-outline-primary mt-3">Przeglądaj katalog</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-4">
+                            <img src="{% static 'images/book-reading.jpg' %}" alt="Reading Area" class="img-fluid rounded" style="height: 180px; object-fit: cover;">
+                        </div>
+                        <h3 class="h4 mb-3">Czytelnia</h3>
+                        <p class="text-muted">Skorzystaj z naszej przestronnej czytelni, gdzie możesz czytać w ciszy i spokoju.</p>
+                        <a href="{% url 'about' %}" class="btn btn-outline-primary mt-3">Dowiedz się więcej</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-4">
+                            <img src="{% static 'images/library-community.jpg' %}" alt="Community Events" class="img-fluid rounded" style="height: 180px; object-fit: cover;">
+                        </div>
+                        <h3 class="h4 mb-3">Wydarzenia</h3>
+                        <p class="text-muted">Uczestnictwo w spotkaniach autorskich, dyskusjach literackich i warsztatach.</p>
+                        <a href="{% url 'events' %}" class="btn btn-outline-primary mt-3">Zobacz wydarzenia</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Digital Library Section -->
+<section class="py-5">
+    <div class="container-xl">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <img src="{% static 'images/digital-library.jpg' %}" alt="Digital Library" class="img-fluid rounded shadow">
+            </div>
+            <div class="col-lg-6">
+                <h2 class="mb-4">Biblioteka Cyfrowa</h2>
+                <p class="lead mb-4">Odkryj naszą rosnącą kolekcję e-booków i zasobów cyfrowych dostępnych online.</p>
+                <ul class="list-unstyled mb-4">
+                    <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Dostęp do e-booków 24/7</li>
+                    <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Czytniki e-booków dostępne do wypożyczenia</li>
+                    <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Dostęp do cyfrowych baz danych i czasopism</li>
+                </ul>
+                <a href="{% url 'digital_library' %}" class="btn btn-primary">Poznaj zasoby cyfrowe</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Popular Authors Section -->
+<section class="py-5 bg-light">
+    <div class="container-xl">
+        <h2 class="section-title text-center mb-5">Popularni autorzy</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            {% for author in popular_authors %}
+                <div class="col">
+                    <div class="card h-100 author-card">
+                        <div class="author-photo-container text-center pt-3">
+                            {% if author.photo %}
+                                <img src="{{ author.photo.url }}" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;" alt="{{ author.name }}">
+                            {% else %}
+                                <img src="{% static 'images/default-author.jpg' %}" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;" alt="{{ author.name }}">
+                            {% endif %}
+                        </div>
+                        <div class="card-body text-center">
+                            <h5 class="card-title mb-2" style="font-weight: bold; font-size: 1.2rem; color: #333;">{{ author.name }}</h5>
+                            <p class="card-text text-muted small">
+                                {% with book_count=author.books.count %}
+                                    {{ book_count }} 
+                                    {% if book_count == 1 %}
+                                        książka
+                                    {% elif book_count > 1 and book_count < 5 %}
+                                        książki
+                                    {% else %}
+                                        książek
+                                    {% endif %}
+                                    w bibliotece
+                                {% endwith %}
+                            </p>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <div class="d-grid">
+                                <a href="{% url 'author_detail' author.pk %}" class="btn btn-outline-primary">Zobacz profil</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <h4 class="alert-heading">Brak autorów!</h4>
+                        <p>Aktualnie nie ma żadnych autorów w bibliotece. Sprawdź ponownie później.</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'author_list' %}" class="btn btn-primary">Zobacz wszystkich autorów</a>
+        </div>
+    </div>
+</section>
+
+<!-- User Testimonials Section -->
+<section class="py-5">
+    <div class="container-xl">
+        <h2 class="section-title text-center mb-5">Co mówią nasi czytelnicy</h2>
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <img src="/media/profile_pics/1_admin.jpg" alt="User" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                            <div>
+                                <h5 class="mb-0">Anna Kowalska</h5>
+                                <p class="text-muted small mb-0">Stała czytelniczka</p>
+                            </div>
+                        </div>
+                        <p class="mb-0">"Biblioteka Online to moje ulubione miejsce do odkrywania nowych książek. Obsługa jest zawsze pomocna, a wybór tytułów imponujący!"</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <img src="/media/profile_pics/3_librarian.jpg" alt="User" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                            <div>
+                                <h5 class="mb-0">Jan Nowak</h5>
+                                <p class="text-muted small mb-0">Student</p>
+                            </div>
+                        </div>
+                        <p class="mb-0">"Jako student, korzystam z biblioteki regularnie. System rezerwacji online jest bardzo wygodny i oszczędza mi dużo czasu!"</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <img src="/media/profile_pics/4_reader.jpg" alt="User" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                            <div>
+                                <h5 class="mb-0">Maria Wiśniewska</h5>
+                                <p class="text-muted small mb-0">Nauczycielka</p>
+                            </div>
+                        </div>
+                        <p class="mb-0">"Uwielbiam wydarzenia organizowane przez bibliotekę. Spotkania z autorami są zawsze inspirujące i świetnie zorganizowane."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

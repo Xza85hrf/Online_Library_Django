@@ -1,0 +1,25 @@
+{% extends "emails/email_base.html" %}
+
+{% block content %}
+<h2>Potwierdzenie wypożyczenia książki</h2>
+
+<p>Witaj {{ user.first_name }},</p>
+
+<p>Dziękujemy za wypożyczenie książki z naszej biblioteki.</p>
+
+<div class="book-details">
+    <h3>Szczegóły wypożyczenia:</h3>
+    <p><strong>Tytuł:</strong> {{ book.title }}</p>
+    <p><strong>Autor:</strong> {% for author in book.authors.all %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+    <p><strong>Data wypożyczenia:</strong> {{ loan_date|date:"d.m.Y" }}</p>
+    <p><strong>Termin zwrotu:</strong> {{ due_date|date:"d.m.Y" }}</p>
+</div>
+
+<p>Przypominamy, że książkę należy zwrócić do dnia {{ due_date|date:"d.m.Y" }}. Wyślemy Ci przypomnienie na 3 dni przed upływem terminu zwrotu.</p>
+
+<p>Jeśli potrzebujesz więcej czasu na przeczytanie książki, możesz przedłużyć okres wypożyczenia (jeśli książka nie jest zarezerwowana przez innego czytelnika) poprzez swój panel użytkownika.</p>
+
+<a href="http://localhost:8000/accounts/profile/" class="button">Przejdź do panelu użytkownika</a>
+
+<p>Dziękujemy za korzystanie z naszej biblioteki i życzymy przyjemnej lektury!</p>
+{% endblock %}

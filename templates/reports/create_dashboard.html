@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Utwórz Nowy Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>Utwórz Nowy Dashboard</h1>
+            <p class="lead">Skonfiguruj nowy dashboard do monitorowania statystyk biblioteki.</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'dashboard_list' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Powrót do Listy
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Informacje o Dashboardzie</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="title" class="form-label">Tytuł Dashboardu <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="title" name="title" required>
+                    <div class="form-text">Podaj opisowy tytuł dla dashboardu.</div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="description" class="form-label">Opis</label>
+                    <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    <div class="form-text">Opcjonalny opis dashboardu.</div>
+                </div>
+                
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="is_default" name="is_default">
+                    <label class="form-check-label" for="is_default">Ustaw jako domyślny dashboard</label>
+                    <div class="form-text">Jeśli zaznaczone, ten dashboard będzie wyświetlany jako domyślny.</div>
+                </div>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Utwórz Dashboard
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

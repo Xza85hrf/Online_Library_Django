@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Parametry Raportu - Przychody{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>Parametry Raportu</h1>
+            <p class="lead">{{ report.title }} - Przychody</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'report_detail' report.pk %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Powrót do Raportu
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Ustaw Parametry</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="start_date" class="form-label">Data Początkowa</label>
+                    <input type="date" class="form-control" id="start_date" name="start_date" 
+                           value="{{ report.parameters.start_date|default:'' }}">
+                    <div class="form-text">Początek okresu dla analizy przychodów.</div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="end_date" class="form-label">Data Końcowa</label>
+                    <input type="date" class="form-control" id="end_date" name="end_date"
+                           value="{{ report.parameters.end_date|default:'' }}">
+                    <div class="form-text">Koniec okresu dla analizy przychodów.</div>
+                </div>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" name="save_parameters" class="btn btn-outline-primary me-md-2">
+                        <i class="fas fa-save"></i> Zapisz Parametry
+                    </button>
+                    <button type="submit" name="run_report" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Uruchom Raport
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

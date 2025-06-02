@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Jak wypożyczyć{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h1 class="mb-4">Jak wypożyczyć książki</h1>
+            
+            <div class="card border-0 shadow-sm mb-5">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <img src="{% static 'images/book-borrowing.jpg' %}" alt="Book Borrowing" class="img-fluid rounded shadow" style="max-height: 300px;">
+                    </div>
+                    
+                    <h2 class="h4 mb-4">Proces wypożyczania</h2>
+                    <p class="lead">Wypożyczanie książek w naszej bibliotece jest proste i intuicyjne. Poniżej znajdziesz szczegółowy przewodnik.</p>
+                    
+                    <div class="timeline mt-5">
+                        <div class="timeline-item mb-5">
+                            <div class="timeline-number bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 40px; height: 40px;">1</div>
+                            <h3 class="h5 mb-3">Załóż konto w bibliotece</h3>
+                            <p>Aby wypożyczać książki, musisz posiadać konto w naszej bibliotece. Możesz zarejestrować się online lub osobiście w bibliotece. Potrzebny będzie dowód tożsamości.</p>
+                            <div class="mt-3">
+                                <a href="{% url 'register' %}" class="btn btn-sm btn-outline-primary">Zarejestruj się online</a>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item mb-5">
+                            <div class="timeline-number bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 40px; height: 40px;">2</div>
+                            <h3 class="h5 mb-3">Wyszukaj książki w katalogu</h3>
+                            <p>Przeglądaj nasz katalog online lub skorzystaj z wyszukiwarki, aby znaleźć interesujące Cię pozycje. Możesz filtrować wyniki według gatunku, autora, wydawnictwa i dostępności.</p>
+                            <div class="mt-3">
+                                <a href="{% url 'book_list' %}" class="btn btn-sm btn-outline-primary">Przeglądaj katalog</a>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item mb-5">
+                            <div class="timeline-number bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 40px; height: 40px;">3</div>
+                            <h3 class="h5 mb-3">Wypożycz książkę</h3>
+                            <p>Po zalogowaniu się na swoje konto, możesz wypożyczyć dostępne książki online. Jeśli książka jest obecnie wypożyczona, możesz ją zarezerwować i zostaniesz powiadomiony, gdy będzie dostępna.</p>
+                        </div>
+                        
+                        <div class="timeline-item mb-5">
+                            <div class="timeline-number bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 40px; height: 40px;">4</div>
+                            <h3 class="h5 mb-3">Odbierz książkę</h3>
+                            <p>Po wypożyczeniu lub zarezerwowaniu książki online, masz 3 dni na jej odbiór w bibliotece. Pamiętaj o zabraniu karty bibliotecznej lub dowodu tożsamości.</p>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-number bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 40px; height: 40px;">5</div>
+                            <h3 class="h5 mb-3">Zwróć książkę na czas</h3>
+                            <p>Standardowy okres wypożyczenia to 30 dni. Możesz przedłużyć wypożyczenie o kolejne 30 dni, jeśli książka nie została zarezerwowana przez innego czytelnika. Zwrotu można dokonać osobiście w bibliotece lub korzystając z całodobowej wrzutni.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-warning mt-5">
+                        <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Uwaga!</h4>
+                        <p class="mb-0">Za nieterminowy zwrot książek naliczane są opłaty w wysokości 0,50 zł za każdy dzień zwłoki. Dbaj o terminowy zwrot, aby uniknąć dodatkowych kosztów.</p>
+                    </div>
+                    
+                    <h2 class="h4 mb-4 mt-5">Limity wypożyczeń</h2>
+                    <ul class="list-group list-group-flush mb-4">
+                        <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                            Maksymalna liczba wypożyczonych książek
+                            <span class="badge bg-primary rounded-pill">5</span>
+                        </li>
+                        <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                            Maksymalna liczba rezerwacji
+                            <span class="badge bg-primary rounded-pill">3</span>
+                        </li>
+                        <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                            Maksymalny okres wypożyczenia
+                            <span class="badge bg-primary rounded-pill">30 dni</span>
+                        </li>
+                        <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                            Maksymalna liczba przedłużeń
+                            <span class="badge bg-primary rounded-pill">1</span>
+                        </li>
+                    </ul>
+                    
+                    <div class="text-center mt-5">
+                        <a href="{% url 'book_list' %}" class="btn btn-primary">Przeglądaj katalog</a>
+                        <a href="{% url 'home' %}" class="btn btn-outline-primary ms-2">Wróć do strony głównej</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

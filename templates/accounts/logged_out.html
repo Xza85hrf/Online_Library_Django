@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Wylogowany - Biblioteka Online{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-6 mx-auto">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-5 text-center">
+                    <div class="mb-4">
+                        <img src="{% static 'images/library-hero.jpg' %}" alt="Library" class="img-fluid rounded shadow" style="max-height: 200px;">
+                    </div>
+                    <h1 class="h3 mb-4">Wylogowano pomyślnie</h1>
+                    <p class="lead mb-4">Dziękujemy za korzystanie z Biblioteki Online.</p>
+                    <a href="{% url 'home' %}" class="btn btn-primary">Powrót do strony głównej</a>
+                    <a href="{% url 'login' %}" class="btn btn-outline-primary ms-2">Zaloguj się ponownie</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

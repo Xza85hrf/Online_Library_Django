@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% load library_extras %}
+
+{% block title %}Rejestracja - Biblioteka Online{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Rejestracja nowego konta</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
+                            {{ form.email|addclass:"form-control" }}
+                            {% if form.email.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.email.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% if form.email.help_text %}
+                            <small class="form-text text-muted">{{ form.email.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="{{ form.first_name.id_for_label }}" class="form-label">{{ form.first_name.label }}</label>
+                            {{ form.first_name|addclass:"form-control" }}
+                            {% if form.first_name.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.first_name.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% if form.first_name.help_text %}
+                            <small class="form-text text-muted">{{ form.first_name.help_text }}</small>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.last_name.id_for_label }}" class="form-label">{{ form.last_name.label }}</label>
+                            {{ form.last_name|addclass:"form-control" }}
+                            {% if form.last_name.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.last_name.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% if form.last_name.help_text %}
+                            <small class="form-text text-muted">{{ form.last_name.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="{{ form.password1.id_for_label }}" class="form-label">{{ form.password1.label }}</label>
+                            {{ form.password1|addclass:"form-control" }}
+                            {% if form.password1.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.password1.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% if form.password1.help_text %}
+                            <small class="form-text text-muted">{{ form.password1.help_text }}</small>
+                            {% endif %}
+                            <div class="progress mt-1 mb-3" style="height: 5px;">
+                                <div id="password-strength-bar" class="progress-bar" role="progressbar" style="width: 0%" 
+                                     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <small class="form-text text-muted mb-3">
+                                Siła hasła: <span id="password-strength" class="fw-bold">Brak</span>
+                            </small>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.password2.id_for_label }}" class="form-label">{{ form.password2.label }}</label>
+                            {{ form.password2|addclass:"form-control" }}
+                            {% if form.password2.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.password2.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% if form.password2.help_text %}
+                            <small class="form-text text-muted">{{ form.password2.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="terms" required>
+                            <label class="form-check-label" for="terms">
+                                Akceptuję <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">regulamin</a> i 
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#privacyModal">politykę prywatności</a>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">Zarejestruj się</button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-4">
+                    <p class="mb-0">Masz już konto? <a href="{% url 'accounts:login' %}">Zaloguj się</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Terms and Conditions Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsModalLabel">Regulamin serwisu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>1. Postanowienia ogólne</h6>
+                <p>1.1. Niniejszy regulamin określa zasady korzystania z serwisu internetowego Biblioteka Online.</p>
+                <p>1.2. Rejestracja w serwisie jest równoznaczna z akceptacją regulaminu.</p>
+                
+                <h6 class="mt-4">2. Zasady korzystania z konta</h6>
+                <p>2.1. Użytkownik zobowiązuje się do podawania prawdziwych danych.</p>
+                <p>2.2. Zabrania się udostępniania konta osobom trzecim.</p>
+                
+                <h6 class="mt-4">3. Zasady wypożyczania książek</h6>
+                <p>3.1. Maksymalny czas wypożyczenia książki to 30 dni.</p>
+                <p>3.2. Za przetrzymanie książki naliczane są kary zgodnie z cennikiem.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Privacy Policy Modal -->
+<div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="privacyModalLabel">Polityka prywatności</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>1. Informacje ogólne</h6>
+                <p>1.1. Administratorem danych osobowych jest Biblioteka Online z siedzibą w Warszawie.</p>
+                <p>1.2. Dane osobowe przetwarzane są w celu świadczenia usług elektronicznych.</p>
+                
+                <h6 class="mt-4">2. Przetwarzanie danych</h6>
+                <p>2.1. Dane osobowe będą przetwarzane zgodnie z obowiązującymi przepisami prawa.</p>
+                <p>2.2. Użytkownik ma prawo dostępu do swoich danych oraz ich poprawiania.</p>
+                
+                <h6 class="mt-4">3. Pliki cookies</h6>
+                <p>3.1. Serwis korzysta z plików cookies w celu zapewnienia prawidłowego działania.</p>
+                <p>3.2. Użytkownik może zablokować zapisywanie plików cookies w ustawieniach przeglądarki.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize phone number formatting
+    document.addEventListener('DOMContentLoaded', function() {
+        const phoneInput = document.getElementById('id_phone_number');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function() {
+                formatPhoneNumber(this);
+            });
+        }
+    });
+</script>
+{% endblock %}

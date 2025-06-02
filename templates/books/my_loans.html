@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Moje wypożyczenia - Biblioteka Online{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Strona główna</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Moje wypożyczenia</li>
+        </ol>
+    </nav>
+    
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h2 mb-3">Moje wypożyczenia</h1>
+            <p class="text-muted mb-0">
+                Zarządzaj swoimi aktualnymi i poprzednimi wypożyczeniami książek.
+            </p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{% url 'book_list' %}" class="btn btn-primary">
+                <i class="fas fa-book me-2"></i> Przeglądaj katalog
+            </a>
+        </div>
+    </div>
+    
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-4" id="loansTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="active-tab" data-bs-toggle="tab" data-bs-target="#active" type="button" role="tab" aria-controls="active" aria-selected="true">
+                Aktywne wypożyczenia <span class="badge bg-primary ms-2">{{ active_loans|length }}</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">
+                Historia wypożyczeń <span class="badge bg-secondary ms-2">{{ past_loans|length }}</span>
+            </button>
+        </li>
+    </ul>
+    
+    <!-- Tab Content -->
+    <div class="tab-content" id="loansTabContent">
+        <!-- Active Loans Tab -->
+        <div class="tab-pane fade show active" id="active" role="tabpanel" aria-labelledby="active-tab">
+            {% if active_loans %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Książka</th>
+                                <th scope="col">Data wypożyczenia</th>
+                                <th scope="col">Termin zwrotu</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Akcje</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for loan in active_loans %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if loan.book.cover %}
+                                                <img src="{{ loan.book.cover.url }}" alt="{{ loan.book.title }}" class="me-3" style="width: 40px; height: 60px; object-fit: cover;">
+                                            {% else %}
+                                                <div class="bg-light me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 60px;">
+                                                    <i class="fas fa-book text-muted"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                <a href="{% url 'book_detail' loan.book.pk %}" class="text-decoration-none">{{ loan.book.title }}</a>
+                                                <div class="small text-muted">
+                                                    {% for author in loan.book.authors.all %}
+                                                        {{ author.name }}{% if not forloop.last %}, {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ loan.loan_date }}</td>
+                                    <td>
+                                        {% if loan.status == 'overdue' %}
+                                            <span class="text-danger fw-bold">{{ loan.due_date }}</span>
+                                        {% else %}
+                                            {{ loan.due_date }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if loan.status == 'borrowed' %}
+                                            <span class="badge bg-success">Wypożyczona</span>
+                                        {% elif loan.status == 'overdue' %}
+                                            <span class="badge bg-danger">Przeterminowana</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'return_book' loan.id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-undo-alt me-1"></i> Zwróć
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-info-circle me-3 fa-2x"></i>
+                        <div>
+                            <h5 class="alert-heading mb-1">Brak aktywnych wypożyczeń</h5>
+                            <p class="mb-0">Obecnie nie masz żadnych wypożyczonych książek. Przejdź do katalogu, aby wypożyczyć książki.</p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- History Tab -->
+        <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+            {% if past_loans %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Książka</th>
+                                <th scope="col">Data wypożyczenia</th>
+                                <th scope="col">Data zwrotu</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for loan in past_loans %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if loan.book.cover %}
+                                                <img src="{{ loan.book.cover.url }}" alt="{{ loan.book.title }}" class="me-3" style="width: 40px; height: 60px; object-fit: cover;">
+                                            {% else %}
+                                                <div class="bg-light me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 60px;">
+                                                    <i class="fas fa-book text-muted"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                <a href="{% url 'book_detail' loan.book.pk %}" class="text-decoration-none">{{ loan.book.title }}</a>
+                                                <div class="small text-muted">
+                                                    {% for author in loan.book.authors.all %}
+                                                        {{ author.name }}{% if not forloop.last %}, {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ loan.loan_date }}</td>
+                                    <td>{{ loan.return_date }}</td>
+                                    <td>
+                                        <span class="badge bg-secondary">Zwrócona</span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-info-circle me-3 fa-2x"></i>
+                        <div>
+                            <h5 class="alert-heading mb-1">Brak historii wypożyczeń</h5>
+                            <p class="mb-0">Nie masz jeszcze żadnych zwróconych książek w historii.</p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

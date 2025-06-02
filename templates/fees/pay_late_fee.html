@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Pay Late Fee" %}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">{% trans "Pay Late Fee" %}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h5>{% trans "Payment Details" %}</h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="bg-light" style="width: 30%;">{% trans "Book" %}</th>
+                                        <td>
+                                            <a href="{% url 'book_detail' pk=late_fee.loan.book.id %}" class="text-decoration-none">
+                                                {{ late_fee.loan.book.title }}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">{% trans "Loan Date" %}</th>
+                                        <td>{{ late_fee.loan.loan_date|date:"d.m.Y" }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">{% trans "Due Date" %}</th>
+                                        <td>{{ late_fee.loan.due_date|date:"d.m.Y" }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">{% trans "Days Overdue" %}</th>
+                                        <td>{{ late_fee.days_overdue }} {% trans "days" %}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">{% trans "Amount Due" %}</th>
+                                        <td class="fw-bold text-danger">{{ late_fee.amount|floatformat:2 }} PLN</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Payment Form -->
+                    <form method="post" class="mt-4">
+                        {% csrf_token %}
+                        
+                        <!-- In a real application, this would include payment gateway integration -->
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            {% trans "This is a demonstration payment form. In a real application, this would integrate with a payment gateway." %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="cardNumber" class="form-label">{% trans "Card Number" %}</label>
+                            <input type="text" class="form-control" id="cardNumber" placeholder="**** **** **** ****" required>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="expiryDate" class="form-label">{% trans "Expiry Date" %}</label>
+                                <input type="text" class="form-control" id="expiryDate" placeholder="MM/YY" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="cvv" class="form-label">{% trans "CVV" %}</label>
+                                <input type="text" class="form-control" id="cvv" placeholder="***" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="cardholderName" class="form-label">{% trans "Cardholder Name" %}</label>
+                            <input type="text" class="form-control" id="cardholderName" required>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="{% url 'my_late_fees' %}" class="btn btn-outline-secondary me-md-2">
+                                <i class="fas fa-times me-2"></i>{% trans "Cancel" %}
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-credit-card me-2"></i>{% trans "Pay" %} {{ late_fee.amount|floatformat:2 }} PLN
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">{% trans "Need Help?" %}</h5>
+                </div>
+                <div class="card-body">
+                    <p>{% trans "If you're having trouble with your payment or believe this fee was charged in error:" %}</p>
+                    <ul>
+                        <li>{% trans "Contact the library staff at library@example.com" %}</li>
+                        <li>{% trans "Visit the library desk during opening hours" %}</li>
+                        <li><a href="{% url 'request_fee_waiver' fee_id=late_fee.id %}">{% trans "Request a fee waiver" %}</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

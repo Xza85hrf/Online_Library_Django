@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Panel Bibliotekarza - Biblioteka Online{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h2 class="card-title">Panel Bibliotekarza</h2>
+                    <p class="card-text">Witaj w panelu zarządzania biblioteką. Tutaj możesz zarządzać książkami, autorami, wydawnictwami oraz wypożyczeniami.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Zarządzanie Książkami</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Dodawaj, edytuj i usuwaj książki w katalogu biblioteki.</p>
+                    <a href="{% url 'book_create' %}" class="btn btn-primary">
+                        <i class="fas fa-plus-circle me-1"></i> Dodaj nową książkę
+                    </a>
+                    <a href="{% url 'book_list' %}" class="btn btn-outline-primary mt-2">
+                        <i class="fas fa-list me-1"></i> Przeglądaj książki
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">Zarządzanie Autorami</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Dodawaj, edytuj i usuwaj autorów w bazie danych.</p>
+                    <a href="{% url 'author_create' %}" class="btn btn-success">
+                        <i class="fas fa-plus-circle me-1"></i> Dodaj nowego autora
+                    </a>
+                    <a href="{% url 'author_list' %}" class="btn btn-outline-success mt-2">
+                        <i class="fas fa-list me-1"></i> Przeglądaj autorów
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0">Zarządzanie Wydawnictwami</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Dodawaj, edytuj i usuwaj wydawnictwa w bazie danych.</p>
+                    <a href="{% url 'publisher_create' %}" class="btn btn-info">
+                        <i class="fas fa-plus-circle me-1"></i> Dodaj nowe wydawnictwo
+                    </a>
+                    <a href="{% url 'publisher_list' %}" class="btn btn-outline-info mt-2">
+                        <i class="fas fa-list me-1"></i> Przeglądaj wydawnictwa
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="card-title mb-0">Ostatnio dodane książki</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_books %}
+                    <div class="list-group">
+                        {% for book in recent_books %}
+                        <a href="{% url 'book_detail' book.id %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ book.title }}</h6>
+                                <small>ID: {{ book.id }}</small>
+                            </div>
+                            <p class="mb-1">
+                                {% for author in book.authors.all %}
+                                {{ author.name }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </p>
+                            <small>Dostępne egzemplarze: {{ book.available_copies }}/{{ book.total_copies }}</small>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">Brak książek w bazie danych.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-warning">
+                    <h5 class="card-title mb-0">Aktywne wypożyczenia</h5>
+                </div>
+                <div class="card-body">
+                    {% if active_loans %}
+                    <div class="list-group">
+                        {% for loan in active_loans %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ loan.book.title }}</h6>
+                                <small class="{% if loan.is_overdue %}text-danger{% endif %}">
+                                    {% if loan.is_overdue %}
+                                    <i class="fas fa-exclamation-circle"></i> Przeterminowane
+                                    {% else %}
+                                    Termin: {{ loan.due_date|date:"d.m.Y" }}
+                                    {% endif %}
+                                </small>
+                            </div>
+                            <p class="mb-1">Czytelnik: {{ loan.user.get_full_name|default:loan.user.email }}</p>
+                            <small>Wypożyczono: {{ loan.loan_date|date:"d.m.Y" }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">Brak aktywnych wypożyczeń.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

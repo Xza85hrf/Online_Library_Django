@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Library Settings" %}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-5 fw-bold">{% trans "Library Settings" %}</h1>
+            <p class="lead text-muted">{% trans "Configure global settings for the library system" %}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'manage_late_fees' %}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-2"></i>{% trans "Back to Late Fees" %}
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">{% trans "System Settings" %}</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Late Fee Settings -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">{% trans "Late Fee Settings" %}</h5>
+                            <div class="mb-3">
+                                <label for="late_fee_daily_rate" class="form-label">{% trans "Daily Late Fee Rate (PLN)" %}</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="late_fee_daily_rate" name="late_fee_daily_rate" 
+                                           value="{{ settings.late_fee_daily_rate }}" step="0.01" min="0" required>
+                                    <span class="input-group-text">PLN</span>
+                                </div>
+                                <div class="form-text">{% trans "The amount charged per day for overdue books." %}</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Loan Settings -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">{% trans "Loan Settings" %}</h5>
+                            <div class="mb-3">
+                                <label for="max_loan_days" class="form-label">{% trans "Maximum Loan Period (Days)" %}</label>
+                                <input type="number" class="form-control" id="max_loan_days" name="max_loan_days" 
+                                       value="{{ settings.max_loan_days }}" min="1" required>
+                                <div class="form-text">{% trans "The maximum number of days a book can be borrowed." %}</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="max_renewals" class="form-label">{% trans "Maximum Renewals" %}</label>
+                                <input type="number" class="form-control" id="max_renewals" name="max_renewals" 
+                                       value="{{ settings.max_renewals }}" min="0" required>
+                                <div class="form-text">{% trans "The maximum number of times a loan can be renewed." %}</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="max_books_per_user" class="form-label">{% trans "Maximum Books Per User" %}</label>
+                                <input type="number" class="form-control" id="max_books_per_user" name="max_books_per_user" 
+                                       value="{{ settings.max_books_per_user }}" min="1" required>
+                                <div class="form-text">{% trans "The maximum number of books a user can borrow at once." %}</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Reservation Settings -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">{% trans "Reservation Settings" %}</h5>
+                            <div class="mb-3">
+                                <label for="reservation_expiry_days" class="form-label">{% trans "Reservation Expiry (Days)" %}</label>
+                                <input type="number" class="form-control" id="reservation_expiry_days" name="reservation_expiry_days" 
+                                       value="{{ settings.reservation_expiry_days }}" min="1" required>
+                                <div class="form-text">{% trans "The number of days until a reservation expires if not claimed." %}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <button type="reset" class="btn btn-outline-secondary me-md-2">
+                                <i class="fas fa-undo me-2"></i>{% trans "Reset" %}
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>{% trans "Save Settings" %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">{% trans "Settings Information" %}</h5>
+                </div>
+                <div class="card-body">
+                    <p>{% trans "These settings affect the entire library system. Changes will take effect immediately." %}</p>
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        {% trans "Changing these settings will not affect existing loans or reservations." %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">{% trans "Current Statistics" %}</h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {% trans "Active Loans" %}
+                        <span class="badge bg-primary rounded-pill">{{ active_loans_count|default:"0" }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {% trans "Overdue Loans" %}
+                        <span class="badge bg-danger rounded-pill">{{ overdue_loans_count|default:"0" }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {% trans "Active Reservations" %}
+                        <span class="badge bg-info rounded-pill">{{ active_reservations_count|default:"0" }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {% trans "Pending Late Fees" %}
+                        <span class="badge bg-warning rounded-pill">{{ pending_fees_count|default:"0" }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {% trans "Total Books" %}
+                        <span class="badge bg-secondary rounded-pill">{{ total_books_count|default:"0" }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

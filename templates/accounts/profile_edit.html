@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% load library_extras %}
+{% load crispy_forms_tags %}
+
+{% block title %}Edycja profilu - Biblioteka Online{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Edycja profilu</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="{{ user_form.first_name.id_for_label }}" class="form-label">{{ user_form.first_name.label }}</label>
+                            {{ user_form.first_name|addclass:"form-control" }}
+                            {% if user_form.first_name.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in user_form.first_name.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% if user_form.first_name.help_text %}
+                            <small class="form-text text-muted">{{ user_form.first_name.help_text }}</small>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ user_form.last_name.id_for_label }}" class="form-label">{{ user_form.last_name.label }}</label>
+                            {{ user_form.last_name|addclass:"form-control" }}
+                            {% if user_form.last_name.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in user_form.last_name.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% if user_form.last_name.help_text %}
+                            <small class="form-text text-muted">{{ user_form.last_name.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="{{ user_form.email.id_for_label }}" class="form-label">{{ user_form.email.label }}</label>
+                            {{ user_form.email|addclass:"form-control" }}
+                            {% if user_form.email.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in user_form.email.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% if user_form.email.help_text %}
+                            <small class="form-text text-muted">{{ user_form.email.help_text }}</small>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ profile_form.phone_number.id_for_label }}" class="form-label">{{ profile_form.phone_number.label }}</label>
+                            {{ profile_form.phone_number|addclass:"form-control" }}
+                            {% if profile_form.phone_number.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in profile_form.phone_number.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% if profile_form.phone_number.help_text %}
+                            <small class="form-text text-muted">{{ profile_form.phone_number.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="{{ profile_form.date_of_birth.id_for_label }}" class="form-label">{{ profile_form.date_of_birth.label }}</label>
+                            {{ profile_form.date_of_birth|addclass:"form-control" }}
+                            {% if profile_form.date_of_birth.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in profile_form.date_of_birth.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% if profile_form.date_of_birth.help_text %}
+                            <small class="form-text text-muted">{{ profile_form.date_of_birth.help_text }}</small>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ profile_form.profile_picture.id_for_label }}" class="form-label">{{ profile_form.profile_picture.label }}</label>
+                            {{ profile_form.profile_picture|addclass:"form-control" }}
+                            {% if profile_form.profile_picture.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in profile_form.profile_picture.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% if profile_form.profile_picture.help_text %}
+                            <small class="form-text text-muted">{{ profile_form.profile_picture.help_text }}</small>
+                            {% endif %}
+                            {% if user.profile.profile_picture %}
+                                <div class="mt-2">
+                                    <img src="{{ user.profile.profile_picture.url }}" alt="Aktualne zdjęcie" class="img-thumbnail" style="max-height: 150px;">
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="checkbox" name="profile_picture-clear" id="profile_picture-clear_id">
+                                        <label class="form-check-label" for="profile_picture-clear_id">
+                                            Usuń aktualne zdjęcie
+                                        </label>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ profile_form.address|as_crispy_field }}
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Powrót do profilu
+                        </a>
+                        <div>
+                            <button type="reset" class="btn btn-outline-danger me-2">
+                                <i class="fas fa-undo me-1"></i> Resetuj
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Zapisz zmiany
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize date picker
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateInput = document.getElementById('id_date_of_birth');
+        if (dateInput) {
+            // Set the input type to date for better mobile support
+            dateInput.type = 'date';
+            
+            // Format the date for display if it exists
+            if (dateInput.value) {
+                const date = new Date(dateInput.value);
+                const formattedDate = date.toISOString().split('T')[0];
+                dateInput.value = formattedDate;
+            }
+        }
+        
+        // Initialize phone number formatting
+        const phoneInput = document.getElementById('id_phone_number');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function() {
+                formatPhoneNumber(this);
+            });
+        }
+        
+        // Preview image before upload
+        const imageUpload = document.getElementById('id_profile_picture');
+        if (imageUpload) {
+            imageUpload.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    const preview = document.getElementById('image-preview');
+                    
+                    reader.onload = function(e) {
+                        if (!preview) {
+                            const newPreview = document.createElement('img');
+                            newPreview.id = 'image-preview';
+                            newPreview.className = 'img-thumbnail mt-2';
+                            newPreview.style.maxHeight = '150px';
+                            imageUpload.parentNode.insertBefore(newPreview, imageUpload.nextSibling);
+                            newPreview.src = e.target.result;
+                        } else {
+                            preview.src = e.target.result;
+                        }
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

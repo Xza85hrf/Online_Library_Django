@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dodaj Widget{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>Dodaj Widget</h1>
+            <p class="lead">Dodaj nowy widget do dashboardu: {{ dashboard.title }}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'dashboard_detail' dashboard.pk %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Powrót do Dashboardu
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Konfiguracja Widgetu</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="title" class="form-label">Tytuł Widgetu <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="title" name="title" required>
+                    <div class="form-text">Podaj tytuł dla widgetu.</div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="widget_type" class="form-label">Typ Widgetu <span class="text-danger">*</span></label>
+                    <select class="form-select" id="widget_type" name="widget_type" required>
+                        <option value="" selected disabled>Wybierz typ widgetu</option>
+                        {% for type_code, type_name in widget_types %}
+                            <option value="{{ type_code }}">{{ type_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="form-text">Wybierz typ widgetu, który chcesz dodać.</div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="data_source" class="form-label">Źródło Danych <span class="text-danger">*</span></label>
+                    <select class="form-select" id="data_source" name="data_source" required>
+                        <option value="" selected disabled>Wybierz źródło danych</option>
+                        <option value="recent_loans">Ostatnie wypożyczenia</option>
+                        <option value="overdue_stats">Statystyki przetrzymanych książek</option>
+                        <option value="popular_books">Popularne książki</option>
+                        <option value="revenue_stats">Statystyki przychodów</option>
+                    </select>
+                    <div class="form-text">Wybierz źródło danych dla widgetu.</div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="size" class="form-label">Rozmiar Widgetu</label>
+                    <select class="form-select" id="size" name="size">
+                        <option value="small">Mały</option>
+                        <option value="medium" selected>Średni</option>
+                        <option value="large">Duży</option>
+                    </select>
+                    <div class="form-text">Wybierz rozmiar widgetu na dashboardzie.</div>
+                </div>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Dodaj Widget
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const widgetTypeSelect = document.getElementById('widget_type');
+        const dataSourceSelect = document.getElementById('data_source');
+        
+        widgetTypeSelect.addEventListener('change', function() {
+            // Reset data source options
+            dataSourceSelect.innerHTML = '<option value="" selected disabled>Wybierz źródło danych</option>';
+            
+            // Add appropriate data sources based on widget type
+            if (this.value === 'chart') {
+                addOption(dataSourceSelect, 'overdue_stats', 'Statystyki przetrzymanych książek');
+                addOption(dataSourceSelect, 'popular_books', 'Popularne książki');
+                addOption(dataSourceSelect, 'revenue_stats', 'Statystyki przychodów');
+            } else if (this.value === 'table') {
+                addOption(dataSourceSelect, 'recent_loans', 'Ostatnie wypożyczenia');
+                addOption(dataSourceSelect, 'popular_books', 'Popularne książki');
+            } else if (this.value === 'counter') {
+                addOption(dataSourceSelect, 'overdue_stats', 'Liczba przetrzymanych książek');
+                addOption(dataSourceSelect, 'revenue_stats', 'Całkowity przychód');
+            } else {
+                // Add all options for other widget types
+                addOption(dataSourceSelect, 'recent_loans', 'Ostatnie wypożyczenia');
+                addOption(dataSourceSelect, 'overdue_stats', 'Statystyki przetrzymanych książek');
+                addOption(dataSourceSelect, 'popular_books', 'Popularne książki');
+                addOption(dataSourceSelect, 'revenue_stats', 'Statystyki przychodów');
+            }
+        });
+        
+        function addOption(selectElement, value, text) {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = text;
+            selectElement.appendChild(option);
+        }
+    });
+</script>
+{% endblock %}

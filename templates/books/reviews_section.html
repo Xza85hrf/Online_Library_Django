@@ -1,0 +1,243 @@
+<!-- Reviews Tab Content -->
+<div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="card-title mb-0">Recenzje czytelników</h5>
+                        {% if book.average_rating > 0 %}
+                        <div class="text-end">
+                            <div class="display-4 fw-bold">{{ book.average_rating }}</div>
+                            <div class="rating-stars">
+                                {% for i in "12345"|make_list %}
+                                    {% if forloop.counter <= book.average_rating %}
+                                        <i class="fas fa-star"></i>
+                                    {% elif forloop.counter <= book.average_rating|add:0.5 %}
+                                        <i class="fas fa-star-half-alt"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <small class="text-muted">Średnia z {{ book.review_count }} recenzji</small>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Rating Distribution -->
+                    {% if book.review_count > 0 %}
+                    <div class="mb-4">
+                        <h6 class="mb-3">Rozkład ocen</h6>
+                        <div class="rating-distribution">
+                            {% with distribution=book.rating_distribution %}
+                            {% for rating in "54321"|make_list %}
+                                {% with count=distribution|get_item:rating|default:0 %}
+                                {% with percentage=count|percentage:book.review_count %}
+                                <div class="d-flex align-items-center mb-2">
+                                    <div style="width: 60px">
+                                        <span class="fw-bold">{{ rating }} <i class="fas fa-star text-warning"></i></span>
+                                    </div>
+                                    <div class="progress flex-grow-1 mx-2" style="height: 10px;">
+                                        <div class="progress-bar bg-warning" role="progressbar" style="width: {{ percentage }}%"
+                                            aria-valuenow="{{ percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <div style="width: 40px" class="text-end">
+                                        <small class="text-muted">{{ count }}</small>
+                                    </div>
+                                </div>
+                                {% endwith %}
+                                {% endwith %}
+                            {% endfor %}
+                            {% endwith %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Add Review Button -->
+                    {% if user.is_authenticated %}
+                        {% if not user_has_reviewed %}
+                            <a href="{% url 'create_review' book_id=book.id %}" class="btn btn-primary mb-4">
+                                <i class="fas fa-plus me-2"></i>Dodaj recenzję
+                            </a>
+                        {% else %}
+                            <div class="alert alert-info mb-4">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        Już dodałeś recenzję tej książki.
+                                    </div>
+                                    <div>
+                                        <a href="{% url 'edit_review' review_id=user_review.id %}" class="btn btn-sm btn-outline-primary me-2">
+                                            <i class="fas fa-edit"></i> Edytuj
+                                        </a>
+                                        <a href="{% url 'delete_review' review_id=user_review.id %}" class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash-alt"></i> Usuń
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                {% if user_review.status == 'pending' %}
+                                    <div class="mt-2 small text-muted">
+                                        <i class="fas fa-clock me-1"></i> Twoja recenzja oczekuje na zatwierdzenie przez moderatora.
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="alert alert-secondary mb-4">
+                            <i class="fas fa-sign-in-alt me-2"></i>
+                            <a href="{% url 'login' %}?next={% url 'book_detail' pk=book.id %}" class="alert-link">Zaloguj się</a>, 
+                            aby dodać recenzję.
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Reviews List -->
+                    {% if reviews %}
+                        <div class="reviews-list">
+                            {% for review in reviews %}
+                                <div class="card mb-3 review-card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <div>
+                                                <h6 class="mb-0">{{ review.user.first_name }} {{ review.user.last_name|default:review.user.email }}</h6>
+                                                <small class="text-muted">
+                                                    {{ review.created_at|date:"d.m.Y" }}
+                                                    {% if review.created_at != review.updated_at %}
+                                                        (zaktualizowano {{ review.updated_at|date:"d.m.Y" }})
+                                                    {% endif %}
+                                                </small>
+                                            </div>
+                                            <div class="rating-stars">
+                                                {% for i in "12345"|make_list %}
+                                                    {% if forloop.counter <= review.rating %}
+                                                        <i class="fas fa-star"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        
+                                        {% if review.title %}
+                                            <h5 class="card-title">{{ review.title }}</h5>
+                                        {% endif %}
+                                        
+                                        <p class="card-text">{{ review.content }}</p>
+                                        
+                                        <div class="d-flex justify-content-between align-items-center mt-3">
+                                            <div class="review-actions">
+                                                <button class="btn btn-sm btn-outline-secondary me-2" type="button">
+                                                    <i class="fas fa-thumbs-up me-1"></i> Przydatna
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-secondary" type="button">
+                                                    <i class="fas fa-flag me-1"></i> Zgłoś
+                                                </button>
+                                            </div>
+                                            
+                                            {% if review.user == user %}
+                                                <div class="review-owner-actions">
+                                                    <a href="{% url 'edit_review' review_id=review.id %}" class="btn btn-sm btn-outline-primary me-2">
+                                                        <i class="fas fa-edit"></i> Edytuj
+                                                    </a>
+                                                    <a href="{% url 'delete_review' review_id=review.id %}" class="btn btn-sm btn-outline-danger">
+                                                        <i class="fas fa-trash-alt"></i> Usuń
+                                                    </a>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-comment-slash fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">Brak recenzji. Bądź pierwszy, który oceni tę książkę!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Rating Tips -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">Wskazówki dotyczące recenzji</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Dobra recenzja powinna:</p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success me-2"></i> Być szczera i obiektywna
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success me-2"></i> Zawierać konkretne przykłady
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success me-2"></i> Unikać spoilerów
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success me-2"></i> Być pomocna dla innych czytelników
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Similar Books -->
+            {% if related_books %}
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">Podobne książki</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row row-cols-1 g-3">
+                        {% for related_book in related_books|slice:":3" %}
+                        <div class="col">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0" style="width: 70px">
+                                    {% if related_book.cover %}
+                                        <img src="{{ related_book.cover.url }}" class="img-fluid rounded" alt="{{ related_book.title }}">
+                                    {% else %}
+                                        <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 100px;">
+                                            <i class="fas fa-book fa-2x text-muted"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-1">
+                                        <a href="{% url 'book_detail' pk=related_book.id %}" class="text-decoration-none">
+                                            {{ related_book.title|truncatechars:40 }}
+                                        </a>
+                                    </h6>
+                                    <p class="mb-1 small text-muted">
+                                        {% for author in related_book.authors.all %}
+                                            {{ author.name }}{% if not forloop.last %}, {% endif %}
+                                        {% endfor %}
+                                    </p>
+                                    <div class="rating-stars small">
+                                        {% if related_book.average_rating > 0 %}
+                                            {% for i in "12345"|make_list %}
+                                                {% if forloop.counter <= related_book.average_rating %}
+                                                    <i class="fas fa-star"></i>
+                                                {% else %}
+                                                    <i class="far fa-star"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                            <small class="text-muted">({{ related_book.review_count }})</small>
+                                        {% else %}
+                                            <small class="text-muted">Brak ocen</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

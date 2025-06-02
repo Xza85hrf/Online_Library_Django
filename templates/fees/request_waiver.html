@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Request Fee Waiver" %}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h3 class="mb-0">{% trans "Request Fee Waiver" %}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h5>{% trans "Late Fee Details" %}</h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="bg-light" style="width: 30%;">{% trans "Book" %}</th>
+                                        <td>
+                                            <a href="{% url 'book_detail' pk=late_fee.loan.book.id %}" class="text-decoration-none">
+                                                {{ late_fee.loan.book.title }}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">{% trans "Loan Date" %}</th>
+                                        <td>{{ late_fee.loan.loan_date|date:"d.m.Y" }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">{% trans "Due Date" %}</th>
+                                        <td>{{ late_fee.loan.due_date|date:"d.m.Y" }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">{% trans "Days Overdue" %}</th>
+                                        <td>{{ late_fee.days_overdue }} {% trans "days" %}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">{% trans "Amount" %}</th>
+                                        <td class="fw-bold text-danger">{{ late_fee.amount|floatformat:2 }} PLN</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Waiver Request Form -->
+                    <form method="post" class="mt-4">
+                        {% csrf_token %}
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            {% trans "Fee waivers are granted for exceptional circumstances only. Please provide a detailed explanation for your request." %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="reason" class="form-label">{% trans "Reason for Waiver Request" %}</label>
+                            <textarea class="form-control" id="reason" name="reason" rows="5" required></textarea>
+                            <div class="form-text">{% trans "Please explain why you believe this fee should be waived. Include any relevant circumstances or documentation." %}</div>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="confirmCheck" required>
+                            <label class="form-check-label" for="confirmCheck">
+                                {% trans "I confirm that the information provided is accurate and complete." %}
+                            </label>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="{% url 'my_late_fees' %}" class="btn btn-outline-secondary me-md-2">
+                                <i class="fas fa-times me-2"></i>{% trans "Cancel" %}
+                            </a>
+                            <button type="submit" class="btn btn-info text-white">
+                                <i class="fas fa-paper-plane me-2"></i>{% trans "Submit Waiver Request" %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">{% trans "Waiver Policy" %}</h5>
+                </div>
+                <div class="card-body">
+                    <p>{% trans "Fee waivers may be granted for the following circumstances:" %}</p>
+                    <ul>
+                        <li>{% trans "Medical emergencies (documentation may be required)" %}</li>
+                        <li>{% trans "Natural disasters or severe weather events" %}</li>
+                        <li>{% trans "Family emergencies" %}</li>
+                        <li>{% trans "Technical issues with the library system" %}</li>
+                        <li>{% trans "Other exceptional circumstances beyond your control" %}</li>
+                    </ul>
+                    <p>{% trans "All waiver requests are reviewed by library staff and decisions are typically made within 3-5 business days." %}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

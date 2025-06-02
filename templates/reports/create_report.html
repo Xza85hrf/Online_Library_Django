@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Utwórz Nowy Raport{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>Utwórz Nowy Raport</h1>
+            <p class="lead">Wybierz typ raportu i podaj podstawowe informacje.</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'report_list' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Powrót do Listy
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Informacje o Raporcie</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="title" class="form-label">Tytuł Raportu <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="title" name="title" required>
+                    <div class="form-text">Podaj opisowy tytuł dla raportu.</div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="report_type" class="form-label">Typ Raportu <span class="text-danger">*</span></label>
+                    <select class="form-select" id="report_type" name="report_type" required>
+                        <option value="" selected disabled>Wybierz typ raportu</option>
+                        {% for type_code, type_name in report_types %}
+                            <option value="{{ type_code }}">{{ type_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="form-text">Wybierz typ raportu, który chcesz utworzyć.</div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="description" class="form-label">Opis</label>
+                    <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    <div class="form-text">Opcjonalny opis raportu.</div>
+                </div>
+                
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="is_scheduled" name="is_scheduled">
+                    <label class="form-check-label" for="is_scheduled">Zaplanuj automatyczne uruchamianie</label>
+                </div>
+                
+                <div class="mb-3" id="schedule_options" style="display: none;">
+                    <label for="schedule_frequency" class="form-label">Częstotliwość</label>
+                    <select class="form-select" id="schedule_frequency" name="schedule_frequency">
+                        <option value="daily">Codziennie</option>
+                        <option value="weekly">Co tydzień</option>
+                        <option value="monthly">Co miesiąc</option>
+                    </select>
+                    <div class="form-text">Jak często raport powinien być automatycznie uruchamiany.</div>
+                </div>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Utwórz Raport
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const isScheduledCheckbox = document.getElementById('is_scheduled');
+        const scheduleOptions = document.getElementById('schedule_options');
+        
+        isScheduledCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                scheduleOptions.style.display = 'block';
+            } else {
+                scheduleOptions.style.display = 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}

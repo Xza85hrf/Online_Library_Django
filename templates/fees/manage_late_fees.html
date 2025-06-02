@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Manage Late Fees" %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-5 fw-bold">{% trans "Late Fee Management" %}</h1>
+            <p class="lead text-muted">{% trans "Manage and process late fees for overdue books" %}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'library_settings' %}" class="btn btn-outline-primary me-2">
+                <i class="fas fa-cog me-2"></i>{% trans "Library Settings" %}
+            </a>
+            <a href="{% url 'admin:library_latefee_changelist' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-external-link-alt me-2"></i>{% trans "Admin Interface" %}
+            </a>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-light h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted">{% trans "Pending Fees" %}</h6>
+                            <h2 class="mb-0 text-danger">{{ total_pending|floatformat:2 }} PLN</h2>
+                        </div>
+                        <div class="bg-danger bg-opacity-10 p-3 rounded">
+                            <i class="fas fa-exclamation-circle fa-2x text-danger"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-light h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted">{% trans "Paid Fees" %}</h6>
+                            <h2 class="mb-0 text-success">{{ total_paid|floatformat:2 }} PLN</h2>
+                        </div>
+                        <div class="bg-success bg-opacity-10 p-3 rounded">
+                            <i class="fas fa-check-circle fa-2x text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-light h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted">{% trans "Waived Fees" %}</h6>
+                            <h2 class="mb-0 text-info">{{ total_waived|floatformat:2 }} PLN</h2>
+                        </div>
+                        <div class="bg-info bg-opacity-10 p-3 rounded">
+                            <i class="fas fa-hand-paper fa-2x text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Controls -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label for="status" class="form-label">{% trans "Filter by Status" %}</label>
+                    <select class="form-select" id="status" name="status">
+                        <option value="" {% if not status_filter %}selected{% endif %}>{% trans "All Fees" %}</option>
+                        <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>{% trans "Pending" %}</option>
+                        <option value="paid" {% if status_filter == 'paid' %}selected{% endif %}>{% trans "Paid" %}</option>
+                        <option value="waived" {% if status_filter == 'waived' %}selected{% endif %}>{% trans "Waived" %}</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="search" class="form-label">{% trans "Search" %}</label>
+                    <input type="text" class="form-control" id="search" name="search" placeholder="{% trans 'Book title or user email' %}">
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter me-2"></i>{% trans "Apply Filters" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Late Fees Table -->
+    {% if late_fees %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>{% trans "User" %}</th>
+                        <th>{% trans "Book" %}</th>
+                        <th>{% trans "Days Overdue" %}</th>
+                        <th>{% trans "Amount" %}</th>
+                        <th>{% trans "Status" %}</th>
+                        <th>{% trans "Created" %}</th>
+                        <th>{% trans "Actions" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fee in late_fees %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'admin:accounts_customuser_change' fee.loan.user.id %}" class="text-decoration-none">
+                                    {{ fee.loan.user.email }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{% url 'book_detail' pk=fee.loan.book.id %}" class="text-decoration-none">
+                                    {{ fee.loan.book.title }}
+                                </a>
+                            </td>
+                            <td>{{ fee.days_overdue }} {% trans "days" %}</td>
+                            <td>{{ fee.amount|floatformat:2 }} PLN</td>
+                            <td>
+                                {% if fee.payment_status == 'pending' %}
+                                    <span class="badge bg-warning">{% trans "Pending" %}</span>
+                                    {% if "WAIVER REQUESTED:" in fee.waived_reason %}
+                                        <span class="badge bg-info ms-1">{% trans "Waiver Requested" %}</span>
+                                    {% endif %}
+                                {% elif fee.payment_status == 'paid' %}
+                                    <span class="badge bg-success">{% trans "Paid" %}</span>
+                                {% elif fee.payment_status == 'waived' %}
+                                    <span class="badge bg-info">{% trans "Waived" %}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ fee.created_at|date:"d.m.Y" }}</td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{% url 'admin:library_latefee_change' fee.id %}" class="btn btn-outline-secondary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    
+                                    {% if fee.payment_status == 'pending' %}
+                                        <form method="post" action="{% url 'process_waiver_request' fee_id=fee.id %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="action" value="approve">
+                                            <button type="submit" class="btn btn-outline-success" title="{% trans 'Waive Fee' %}">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </form>
+                                        
+                                        {% if "WAIVER REQUESTED:" in fee.waived_reason %}
+                                            <a href="{% url 'process_waiver_request' fee_id=fee.id %}" class="btn btn-outline-info" title="{% trans 'Process Waiver Request' %}">
+                                                <i class="fas fa-hand-paper"></i>
+                                            </a>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+                <h3>{% trans "No Late Fees" %}</h3>
+                <p class="lead text-muted">{% trans "There are no late fees matching your criteria." %}</p>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

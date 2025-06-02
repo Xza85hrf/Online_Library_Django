@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboardy{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>Dashboardy</h1>
+            <p class="lead">Przeglądaj i zarządzaj dashboardami biblioteki.</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'create_dashboard' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Nowy Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Dashboards List -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Dashboardy</h5>
+        </div>
+        <div class="card-body">
+            {% if dashboards %}
+                <div class="row row-cols-1 row-cols-md-3 g-4">
+                    {% for dashboard in dashboards %}
+                        <div class="col">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        {{ dashboard.title }}
+                                        {% if dashboard.is_default %}
+                                            <span class="badge bg-success">Domyślny</span>
+                                        {% endif %}
+                                    </h5>
+                                    <p class="card-text">{{ dashboard.description|truncatewords:20 }}</p>
+                                    <p class="text-muted small">
+                                        Utworzony: {{ dashboard.created_at|date:"d.m.Y" }}<br>
+                                        Przez: {{ dashboard.created_by.username }}
+                                    </p>
+                                </div>
+                                <div class="card-footer bg-transparent">
+                                    <a href="{% url 'dashboard_detail' dashboard.pk %}" class="btn btn-primary">Wyświetl</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    Brak dashboardów. Utwórz swój pierwszy dashboard.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

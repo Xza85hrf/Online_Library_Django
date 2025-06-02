@@ -1,0 +1,27 @@
+{% extends "emails/email_base.html" %}
+
+{% block content %}
+<h2>Powiadomienie o przeterminowanym wypożyczeniu</h2>
+
+<p>Witaj {{ user.first_name }},</p>
+
+<p>Informujemy, że termin zwrotu wypożyczonej przez Ciebie książki upłynął {{ days_overdue }} {% if days_overdue == 1 %}dzień{% elif days_overdue < 5 %}dni{% else %}dni{% endif %} temu.</p>
+
+<div class="book-details">
+    <h3>Szczegóły wypożyczenia:</h3>
+    <p><strong>Tytuł:</strong> {{ book.title }}</p>
+    <p><strong>Autor:</strong> {% for author in book.authors.all %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+    <p><strong>Termin zwrotu:</strong> {{ due_date|date:"d.m.Y" }}</p>
+    <p><strong>Dni po terminie:</strong> {{ days_overdue }}</p>
+</div>
+
+<p>Prosimy o jak najszybszy zwrot książki, aby uniknąć dalszych opłat za opóźnienie.</p>
+
+<p>Zgodnie z regulaminem biblioteki, za każdy dzień opóźnienia naliczana jest opłata w wysokości 0,50 zł.</p>
+
+<p>Aktualna należność za opóźnienie: <strong>{{ days_overdue|floatformat:2 }} zł</strong></p>
+
+<a href="http://localhost:8000/accounts/profile/" class="button">Przejdź do panelu użytkownika</a>
+
+<p>W przypadku pytań lub problemów prosimy o kontakt z biblioteką.</p>
+{% endblock %}

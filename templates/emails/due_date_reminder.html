@@ -1,0 +1,24 @@
+{% extends "emails/email_base.html" %}
+
+{% block content %}
+<h2>Przypomnienie o zbliżającym się terminie zwrotu</h2>
+
+<p>Witaj {{ user.first_name }},</p>
+
+<p>Przypominamy, że termin zwrotu wypożyczonej przez Ciebie książki upływa za 3 dni.</p>
+
+<div class="book-details">
+    <h3>Szczegóły wypożyczenia:</h3>
+    <p><strong>Tytuł:</strong> {{ book.title }}</p>
+    <p><strong>Autor:</strong> {% for author in book.authors.all %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+    <p><strong>Termin zwrotu:</strong> {{ due_date|date:"d.m.Y" }}</p>
+</div>
+
+<p>Prosimy o zwrot książki w terminie, aby uniknąć naliczenia opłat za opóźnienie.</p>
+
+<p>Jeśli potrzebujesz więcej czasu na przeczytanie książki, możesz przedłużyć okres wypożyczenia (jeśli książka nie jest zarezerwowana przez innego czytelnika) poprzez swój panel użytkownika.</p>
+
+<a href="http://localhost:8000/accounts/profile/" class="button">Przejdź do panelu użytkownika</a>
+
+<p>Dziękujemy za korzystanie z naszej biblioteki!</p>
+{% endblock %}

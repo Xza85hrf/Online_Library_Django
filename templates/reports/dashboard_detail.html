@@ -1,0 +1,314 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ dashboard.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>{{ dashboard.title }}</h1>
+            <p class="lead">{{ dashboard.description }}</p>
+            {% if dashboard.is_default %}
+                <span class="badge bg-success">Dashboard Domyślny</span>
+            {% endif %}
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'add_widget' dashboard.pk %}" class="btn btn-primary me-2">
+                <i class="fas fa-plus"></i> Dodaj Widget
+            </a>
+            <a href="{% url 'dashboard_list' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Powrót
+            </a>
+        </div>
+    </div>
+
+    <!-- Widgets -->
+    <div class="row" id="dashboard-widgets">
+        {% if widgets %}
+            {% for widget in widgets %}
+                <div class="col-md-{% if widget.size == 'small' %}4{% elif widget.size == 'large' %}12{% else %}6{% endif %} mb-4">
+                    <div class="card h-100 widget" data-widget-id="{{ widget.id }}">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">{{ widget.title }}</h5>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="widgetMenu{{ widget.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="widgetMenu{{ widget.id }}">
+                                    <li><a class="dropdown-item refresh-widget" href="#" data-widget-id="{{ widget.id }}"><i class="fas fa-sync"></i> Odśwież</a></li>
+                                    <li><a class="dropdown-item" href="#"><i class="fas fa-edit"></i> Edytuj</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash"></i> Usuń</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="widget-content" id="widget-content-{{ widget.id }}">
+                                <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Ładowanie...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <p>Ten dashboard nie ma jeszcze żadnych widgetów. Dodaj pierwszy widget, aby rozpocząć.</p>
+                    <a href="{% url 'add_widget' dashboard.pk %}" class="btn btn-primary mt-2">
+                        <i class="fas fa-plus"></i> Dodaj Widget
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Load all widgets
+        const widgets = document.querySelectorAll('.widget');
+        widgets.forEach(widget => {
+            loadWidgetData(widget.dataset.widgetId);
+        });
+        
+        // Refresh widget event
+        document.querySelectorAll('.refresh-widget').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const widgetId = this.dataset.widgetId;
+                loadWidgetData(widgetId);
+            });
+        });
+        
+        // Function to load widget data
+        function loadWidgetData(widgetId) {
+            const contentElement = document.getElementById(`widget-content-${widgetId}`);
+            contentElement.innerHTML = `
+                <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Ładowanie...</span>
+                    </div>
+                </div>
+            `;
+            
+            fetch(`/reports/widgets/${widgetId}/data/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                renderWidgetContent(widgetId, data);
+            })
+            .catch(error => {
+                contentElement.innerHTML = `
+                    <div class="alert alert-danger">
+                        Wystąpił błąd podczas ładowania danych: ${error}
+                    </div>
+                `;
+            });
+        }
+        
+        // Function to render widget content based on data
+        function renderWidgetContent(widgetId, data) {
+            const contentElement = document.getElementById(`widget-content-${widgetId}`);
+            const widget = document.querySelector(`.widget[data-widget-id="${widgetId}"]`);
+            const widgetType = widget.dataset.widgetType || 'table';
+            
+            // Clear content
+            contentElement.innerHTML = '';
+            
+            // Recent loans widget
+            if (data.loans) {
+                contentElement.innerHTML = `
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Książka</th>
+                                    <th>Użytkownik</th>
+                                    <th>Data wypożyczenia</th>
+                                    <th>Termin zwrotu</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.loans.map(loan => `
+                                    <tr>
+                                        <td>${loan.book_title}</td>
+                                        <td>${loan.user_email}</td>
+                                        <td>${new Date(loan.loan_date).toLocaleDateString()}</td>
+                                        <td>${new Date(loan.due_date).toLocaleDateString()}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+            
+            // Overdue stats widget
+            else if (data.groups) {
+                // Create canvas for chart
+                const canvas = document.createElement('canvas');
+                canvas.id = `chart-${widgetId}`;
+                contentElement.appendChild(canvas);
+                
+                // Create chart
+                const ctx = canvas.getContext('2d');
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: Object.keys(data.groups),
+                        datasets: [{
+                            data: Object.values(data.groups),
+                            backgroundColor: [
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(255, 99, 132, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(255, 99, 132, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                            },
+                            title: {
+                                display: true,
+                                text: `Łącznie: ${data.total} przetrzymanych`
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Popular books widget
+            else if (data.books) {
+                // Create canvas for chart
+                const canvas = document.createElement('canvas');
+                canvas.id = `chart-${widgetId}`;
+                contentElement.appendChild(canvas);
+                
+                // Create chart
+                const ctx = canvas.getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.books.map(book => book.title),
+                        datasets: [{
+                            label: 'Liczba wypożyczeń',
+                            data: data.books.map(book => book.loan_count),
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Najpopularniejsze książki'
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Revenue stats widget
+            else if (data.monthly) {
+                // Create canvas for chart
+                const canvas = document.createElement('canvas');
+                canvas.id = `chart-${widgetId}`;
+                contentElement.appendChild(canvas);
+                
+                // Create chart
+                const ctx = canvas.getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.monthly.map(item => item.month),
+                        datasets: [{
+                            label: 'Przychód (zł)',
+                            data: data.monthly.map(item => item.total),
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 2,
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Przychód miesięczny'
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Default - no data
+            else {
+                contentElement.innerHTML = `
+                    <div class="alert alert-info">
+                        Brak danych do wyświetlenia.
+                    </div>
+                `;
+            }
+        }
+        
+        // Helper function to get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800px" height="600px" viewBox="0 0 800 600" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Library Hero</title>
+    <g id="Library-Hero" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect fill="#FFFFFF" x="0" y="0" width="800" height="600"></rect>
+        <!-- Bookshelf -->
+        <rect id="Bookshelf" fill="#8B4513" x="100" y="150" width="600" height="300" rx="5"></rect>
+        <!-- Books -->
+        <rect id="Book1" fill="#FF5733" x="120" y="170" width="40" height="260"></rect>
+        <rect id="Book2" fill="#33FF57" x="170" y="170" width="30" height="260"></rect>
+        <rect id="Book3" fill="#3357FF" x="210" y="170" width="50" height="260"></rect>
+        <rect id="Book4" fill="#F3FF33" x="270" y="170" width="35" height="260"></rect>
+        <rect id="Book5" fill="#FF33F3" x="315" y="170" width="45" height="260"></rect>
+        <rect id="Book6" fill="#33FFF3" x="370" y="170" width="40" height="260"></rect>
+        <rect id="Book7" fill="#FF8C33" x="420" y="170" width="30" height="260"></rect>
+        <rect id="Book8" fill="#8C33FF" x="460" y="170" width="50" height="260"></rect>
+        <rect id="Book9" fill="#33FF8C" x="520" y="170" width="35" height="260"></rect>
+        <rect id="Book10" fill="#FF3333" x="565" y="170" width="45" height="260"></rect>
+        <rect id="Book11" fill="#3333FF" x="620" y="170" width="40" height="260"></rect>
+        <!-- Shelf Dividers -->
+        <rect id="Divider1" fill="#6B3100" x="100" y="250" width="600" height="10"></rect>
+        <rect id="Divider2" fill="#6B3100" x="100" y="350" width="600" height="10"></rect>
+        <!-- Person -->
+        <circle id="Head" fill="#FFD700" cx="400" cy="100" r="30"></circle>
+        <rect id="Body" fill="#4169E1" x="380" y="130" width="40" height="80"></rect>
+        <rect id="LeftArm" fill="#4169E1" x="350" y="140" width="30" height="15" rx="5"></rect>
+        <rect id="RightArm" fill="#4169E1" x="420" y="140" width="50" height="15" rx="5" transform="rotate(20 445 147.5)"></rect>
+        <rect id="LeftLeg" fill="#000080" x="380" y="210" width="15" height="60"></rect>
+        <rect id="RightLeg" fill="#000080" x="405" y="210" width="15" height="60"></rect>
+        <!-- Book in Hand -->
+        <rect id="BookInHand" fill="#FF0000" x="450" y="120" width="30" height="40"></rect>
+    </g>
+</svg>

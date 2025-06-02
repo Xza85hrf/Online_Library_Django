@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Parametry Raportu - Popularne Książki{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>Parametry Raportu</h1>
+            <p class="lead">{{ report.title }} - Popularne Książki</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'report_detail' report.pk %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Powrót do Raportu
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Ustaw Parametry</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="time_period" class="form-label">Okres Czasu (dni)</label>
+                    <select class="form-select" id="time_period" name="time_period">
+                        <option value="7" {% if report.parameters.time_period == '7' %}selected{% endif %}>Ostatni tydzień</option>
+                        <option value="30" {% if report.parameters.time_period == '30' or not report.parameters.time_period %}selected{% endif %}>Ostatni miesiąc</option>
+                        <option value="90" {% if report.parameters.time_period == '90' %}selected{% endif %}>Ostatni kwartał</option>
+                        <option value="180" {% if report.parameters.time_period == '180' %}selected{% endif %}>Ostatnie pół roku</option>
+                        <option value="365" {% if report.parameters.time_period == '365' %}selected{% endif %}>Ostatni rok</option>
+                    </select>
+                    <div class="form-text">Wybierz okres czasu dla analizy popularności książek.</div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="limit" class="form-label">Limit Wyników</label>
+                    <select class="form-select" id="limit" name="limit">
+                        <option value="5" {% if report.parameters.limit == '5' %}selected{% endif %}>5</option>
+                        <option value="10" {% if report.parameters.limit == '10' or not report.parameters.limit %}selected{% endif %}>10</option>
+                        <option value="20" {% if report.parameters.limit == '20' %}selected{% endif %}>20</option>
+                        <option value="50" {% if report.parameters.limit == '50' %}selected{% endif %}>50</option>
+                        <option value="100" {% if report.parameters.limit == '100' %}selected{% endif %}>100</option>
+                    </select>
+                    <div class="form-text">Wybierz liczbę książek do wyświetlenia w raporcie.</div>
+                </div>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" name="save_parameters" class="btn btn-outline-primary me-md-2">
+                        <i class="fas fa-save"></i> Zapisz Parametry
+                    </button>
+                    <button type="submit" name="run_report" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Uruchom Raport
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Regulamin{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h1 class="mb-4">Regulamin biblioteki</h1>
+            
+            <div class="card border-0 shadow-sm mb-5">
+                <div class="card-body p-5">
+                    <h2 class="h4 mb-4">Postanowienia ogólne</h2>
+                    
+                    <ol class="list-group list-group-numbered mb-5">
+                        <li class="list-group-item bg-transparent">Biblioteka Online jest instytucją otwartą dla wszystkich zainteresowanych.</li>
+                        <li class="list-group-item bg-transparent">Korzystanie ze zbiorów biblioteki jest bezpłatne, z wyjątkiem opłat za nieterminowy zwrot książek.</li>
+                        <li class="list-group-item bg-transparent">Każdy czytelnik zobowiązany jest do zapoznania się z niniejszym regulaminem i przestrzegania jego postanowień.</li>
+                        <li class="list-group-item bg-transparent">Na terenie biblioteki obowiązuje zakaz spożywania posiłków i napojów, palenia tytoniu oraz używania telefonów komórkowych w sposób zakłócający ciszę.</li>
+                        <li class="list-group-item bg-transparent">Biblioteka nie ponosi odpowiedzialności za rzeczy osobiste pozostawione bez nadzoru.</li>
+                    </ol>
+                    
+                    <h2 class="h4 mb-4">Zasady korzystania z wypożyczalni</h2>
+                    
+                    <ol class="list-group list-group-numbered mb-5">
+                        <li class="list-group-item bg-transparent">Warunkiem korzystania z wypożyczalni jest posiadanie aktualnej karty bibliotecznej.</li>
+                        <li class="list-group-item bg-transparent">Kartę biblioteczną otrzymuje się po okazaniu dowodu tożsamości i wypełnieniu karty zapisu.</li>
+                        <li class="list-group-item bg-transparent">Czytelnik może wypożyczyć jednorazowo maksymalnie 5 książek na okres 30 dni.</li>
+                        <li class="list-group-item bg-transparent">Istnieje możliwość jednokrotnego przedłużenia terminu zwrotu o kolejne 30 dni, pod warunkiem że książka nie została zarezerwowana przez innego czytelnika.</li>
+                        <li class="list-group-item bg-transparent">Za nieterminowy zwrot książek pobierana jest opłata w wysokości 0,50 zł za każdy dzień zwłoki od jednej książki.</li>
+                        <li class="list-group-item bg-transparent">W przypadku zgubienia lub zniszczenia książki, czytelnik zobowiązany jest do zakupu identycznego egzemplarza lub innej książki wskazanej przez bibliotekarza.</li>
+                        <li class="list-group-item bg-transparent">Biblioteka może odmówić wypożyczenia książek osobom, które nie stosują się do regulaminu.</li>
+                    </ol>
+                    
+                    <h2 class="h4 mb-4">Zasady korzystania z czytelni</h2>
+                    
+                    <ol class="list-group list-group-numbered mb-5">
+                        <li class="list-group-item bg-transparent">Z czytelni może korzystać każdy, bez względu na to, czy jest zarejestrowanym czytelnikiem biblioteki.</li>
+                        <li class="list-group-item bg-transparent">W czytelni obowiązuje cisza i zakaz używania telefonów komórkowych.</li>
+                        <li class="list-group-item bg-transparent">Książki i czasopisma z czytelni podaje bibliotekarz. Po skorzystaniu z materiałów należy je zwrócić bibliotekarzowi.</li>
+                        <li class="list-group-item bg-transparent">Zabrania się wynoszenia materiałów z czytelni bez zgody bibliotekarza.</li>
+                        <li class="list-group-item bg-transparent">W czytelni można korzystać z własnych materiałów po zgłoszeniu tego bibliotekarzowi.</li>
+                    </ol>
+                    
+                    <h2 class="h4 mb-4">Zasady korzystania z zasobów cyfrowych</h2>
+                    
+                    <ol class="list-group list-group-numbered mb-5">
+                        <li class="list-group-item bg-transparent">Dostęp do zasobów cyfrowych mają zarejestrowani czytelnicy biblioteki.</li>
+                        <li class="list-group-item bg-transparent">E-booki i audiobooki można wypożyczyć na okres 14 dni.</li>
+                        <li class="list-group-item bg-transparent">Jednorazowo można wypożyczyć maksymalnie 3 e-booki i 2 audiobooki.</li>
+                        <li class="list-group-item bg-transparent">Zabrania się kopiowania, rozpowszechniania i modyfikowania wypożyczonych materiałów cyfrowych.</li>
+                        <li class="list-group-item bg-transparent">Naruszenie praw autorskich może skutkować zablokowaniem konta czytelnika.</li>
+                    </ol>
+                    
+                    <h2 class="h4 mb-4">Postanowienia końcowe</h2>
+                    
+                    <ol class="list-group list-group-numbered mb-4">
+                        <li class="list-group-item bg-transparent">Biblioteka zastrzega sobie prawo do zmiany regulaminu.</li>
+                        <li class="list-group-item bg-transparent">O zmianach w regulaminie czytelnicy będą informowani za pośrednictwem strony internetowej biblioteki.</li>
+                        <li class="list-group-item bg-transparent">Sprawy sporne nieujęte w regulaminie rozstrzyga Dyrektor Biblioteki.</li>
+                    </ol>
+                    
+                    <div class="alert alert-info mt-5">
+                        <p class="mb-0">Regulamin obowiązuje od dnia 1 stycznia 2023 roku.</p>
+                    </div>
+                    
+                    <div class="text-center mt-5">
+                        <a href="{% url 'home' %}" class="btn btn-primary">Wróć do strony głównej</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

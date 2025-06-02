@@ -1,0 +1,271 @@
+<!-- Tabs Navigation -->
+<ul class="nav nav-tabs mb-4" id="bookTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="description-tab" data-bs-toggle="tab" 
+                data-bs-target="#description" type="button" role="tab" aria-controls="description" 
+                aria-selected="true">
+            <i class="fas fa-book-open me-1"></i> Opis
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="details-tab" data-bs-toggle="tab" 
+                data-bs-target="#details" type="button" role="tab" aria-controls="details" 
+                aria-selected="false">
+            <i class="fas fa-info-circle me-1"></i> Szczegóły
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" 
+                data-bs-target="#reviews" type="button" role="tab" aria-controls="reviews" 
+                aria-selected="false">
+            <i class="fas fa-star me-1"></i> Recenzje
+            <span class="badge bg-primary rounded-pill ms-1">{{ book.review_count }}</span>
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="availability-tab" data-bs-toggle="tab" 
+                data-bs-target="#availability" type="button" role="tab" aria-controls="availability" 
+                aria-selected="false">
+            <i class="fas fa-store me-1"></i> Dostępność
+        </button>
+    </li>
+</ul>
+
+<!-- Tabs Content -->
+<div class="tab-content" id="bookTabsContent">
+    <!-- Description Tab -->
+    <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Opis książki</h5>
+                <div class="book-description">
+                    {{ book.description|linebreaks|default:"Brak opisu." }}
+                </div>
+                
+                {% if book.tags.all %}
+                <div class="mt-4">
+                    <h6>Tagi:</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for tag in book.tags.all %}
+                        <a href="{% url 'book_list' %}?tag={{ tag.slug }}" class="badge bg-light text-dark text-decoration-none">
+                            <i class="fas fa-tag me-1"></i> {{ tag.name }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if book.additional_notes %}
+                <div class="mt-4">
+                    <h6>Uwagi dodatkowe:</h6>
+                    <p class="mb-0">{{ book.additional_notes }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Details Tab -->
+    <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-4">Szczegóły książki</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <th scope="row" class="text-muted" style="width: 40%;">Tytuł</th>
+                                    <td>{{ book.title }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="text-muted">Autorzy</th>
+                                    <td>
+                                        {% for author in book.authors.all %}
+                                            <a href="{% url 'author_detail' pk=author.id %}" class="text-decoration-none">
+                                                {{ author.name }}{% if not forloop.last %}, {% endif %}
+                                            </a>
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="text-muted">Wydawnictwo</th>
+                                    <td>
+                                        {% if book.publisher %}
+                                            <a href="{% url 'publisher_detail' pk=book.publisher.id %}" class="text-decoration-none">
+                                                {{ book.publisher.name }}
+                                            </a>
+                                        {% else %}
+                                            Brak danych
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="text-muted">Data wydania</th>
+                                    <td>{{ book.publication_date|date:"d.m.Y" }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="text-muted">ISBN</th>
+                                    <td>{{ book.isbn|default:"Brak" }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <th scope="row" class="text-muted" style="width: 40%;">Kategoria</th>
+                                    <td>
+                                        {% if book.genres %}
+                                            {% for genre in book.genres %}
+                                                {{ genre }}{% if not forloop.last %}, {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            Brak danych
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="text-muted">Język</th>
+                                    <td>{{ book.language }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="text-muted">Liczba stron</th>
+                                    <td>{{ book.pages|default:"Brak danych" }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="text-muted">Dostępne kopie</th>
+                                    <td>{{ book.available_copies }} z {{ book.total_copies }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" class="text-muted">Status</th>
+                                    <td>
+                                        {% if book.is_available %}
+                                            <span class="badge bg-success">Dostępna</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Niedostępna</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Reviews Tab -->
+    {% include 'books/reviews_section.html' %}
+    
+    <!-- Availability Tab -->
+    <div class="tab-pane fade" id="availability" role="tabpanel" aria-labelledby="availability-tab">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-4">Dostępność egzemplarzy</h5>
+                
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0">Status wypożyczeń</h6>
+                        <span class="badge bg-primary rounded-pill">{{ book.total_copies }} egzemplarzy</span>
+                    </div>
+                    
+                    <div class="progress mb-2" style="height: 25px;">
+                        {% with available_percent=book.available_copies|percentage:book.total_copies %}
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ available_percent }}%"
+                             aria-valuenow="{{ available_percent }}" aria-valuemin="0" aria-valuemax="100">
+                            {{ book.available_copies }} dostępnych
+                        </div>
+                        <div class="progress-bar bg-warning" role="progressbar" 
+                             style="width: {{ 100|subtract:available_percent }}%"
+                             aria-valuenow="{{ 100|subtract:available_percent }}" aria-valuemin="0" aria-valuemax="100">
+                            {{ book.total_copies|subtract:book.available_copies }} wypożyczonych
+                        </div>
+                        {% endwith %}
+                    </div>
+                </div>
+                
+                {% if user.is_authenticated %}
+                    <div class="d-grid gap-2 d-md-flex mb-4">
+                        {% if book.is_available %}
+                            <a href="{% url 'borrow_book' book.id %}" class="btn btn-primary">
+                                <i class="fas fa-book-reader me-2"></i> Wypożycz teraz
+                            </a>
+                            <a href="{% url 'reserve_book' book.id %}" class="btn btn-outline-primary">
+                                <i class="far fa-calendar-plus me-2"></i> Zarezerwuj
+                            </a>
+                        {% else %}
+                            <button class="btn btn-secondary" disabled>
+                                <i class="fas fa-times-circle me-2"></i> Brak dostępnych egzemplarzy
+                            </button>
+                            <a href="{% url 'reserve_book' book.id %}" class="btn btn-outline-primary">
+                                <i class="far fa-bell me-2"></i> Powiadom o dostępności
+                            </a>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <a href="{% url 'login' %}?next={% url 'book_detail' pk=book.id %}" class="alert-link">
+                            Zaloguj się
+                        </a>, aby wypożyczyć lub zarezerwować tę książkę.
+                    </div>
+                {% endif %}
+                
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">Informacje o wypożyczeniach</h6>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Maksymalny okres wypożyczenia
+                            <span class="badge bg-primary rounded-pill">14 dni</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Opłata za przetrzymanie
+                            <span class="badge bg-danger rounded-pill">0,50 zł / dzień</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Maksymalna liczba przedłużeń
+                            <span class="badge bg-primary rounded-pill">2</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Maksymalna liczba wypożyczonych książek
+                            <span class="badge bg-primary rounded-pill">5</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reserve Book Modal -->
+<div class="modal fade" id="reserveModal" tabindex="-1" aria-labelledby="reserveModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reserveModalLabel">Zarezerwuj książkę</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reserveForm" method="post" action="{% url 'reserve_book' book.id %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="reservationDate" class="form-label">Data rezerwacji</label>
+                        <input type="date" class="form-control" id="reservationDate" name="reservation_date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="reservationNotes" class="form-label">Uwagi (opcjonalnie)</label>
+                        <textarea class="form-control" id="reservationNotes" name="notes" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                <button type="submit" form="reserveForm" class="btn btn-primary">Zarezerwuj</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,356 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load library_extras %}
+
+{% block title %}Mój profil - Biblioteka Online{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <!-- Sidebar with user info -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="position-relative d-inline-block mb-3">
+                        {% if user.profile.profile_picture %}
+                            <img src="{{ user.profile.profile_picture.url }}" class="profile-img" alt="Zdjęcie profilowe">
+                        {% else %}
+                            <div class="profile-img bg-light d-flex align-items-center justify-content-center">
+                                <i class="fas fa-user fa-5x text-muted"></i>
+                            </div>
+                        {% endif %}
+                        <a href="{% url 'accounts:profile_edit' %}" class="btn btn-primary btn-sm position-absolute bottom-0 end-0 rounded-circle" 
+                           data-bs-toggle="tooltip" title="Zmień zdjęcie">
+                            <i class="fas fa-camera"></i>
+                        </a>
+                    </div>
+                    
+                    <h4 class="mb-1">{{ user.get_full_name|default:user.email }}</h4>
+                    <p class="text-muted mb-3">
+                        <i class="fas fa-user-tag me-1"></i> {{ user.profile.get_role_display }}
+                    </p>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'accounts:profile_edit' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-edit me-1"></i> Edytuj profil
+                        </a>
+                        <a href="{% url 'accounts:change_password' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-key me-1"></i> Zmień hasło
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="card-footer bg-transparent">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-envelope me-2"></i> Email</span>
+                            <span>{{ user.email }}</span>
+                        </li>
+                        {% if user.profile.phone_number %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-phone me-2"></i> Telefon</span>
+                            <span>{{ user.profile.phone_number }}</span>
+                        </li>
+                        {% endif %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-calendar-alt me-2"></i> Dołączono</span>
+                            <span>{{ user.date_joined|date:"d.m.Y" }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Account stats -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6 class="mb-0">Statystyki konta</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span>Limit wypożyczeń:</span>
+                        <span class="badge bg-primary rounded-pill">{{ user.profile.book_limit }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span>Aktywne wypożyczenia:</span>
+                        <span class="badge bg-success rounded-pill">{{ user.profile.active_borrowings_count }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>Pozostało miejsca:</span>
+                        <span class="badge bg-{{ user.profile.can_borrow_more_books|yesno:'info,warning' }} rounded-pill">
+                            {{ user.profile.book_limit|subtract:user.profile.active_borrowings_count }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main content -->
+        <div class="col-md-8">
+            <!-- Tabs navigation -->
+            <ul class="nav nav-tabs mb-4" id="profileTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="details-tab" data-bs-toggle="tab" 
+                            data-bs-target="#details" type="button" role="tab" aria-controls="details" 
+                            aria-selected="true">
+                        <i class="fas fa-user me-1"></i> Dane osobowe
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="borrowings-tab" data-bs-toggle="tab" 
+                            data-bs-target="#borrowings" type="button" role="tab" aria-controls="borrowings" 
+                            aria-selected="false">
+                        <i class="fas fa-book me-1"></i> Moje wypożyczenia
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="history-tab" data-bs-toggle="tab" 
+                            data-bs-target="#history" type="button" role="tab" aria-controls="history" 
+                            aria-selected="false">
+                        <i class="fas fa-history me-1"></i> Historia
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="settings-tab" data-bs-toggle="tab" 
+                            data-bs-target="#settings" type="button" role="tab" aria-controls="settings" 
+                            aria-selected="false">
+                        <i class="fas fa-cog me-1"></i> Ustawienia
+                    </button>
+                </li>
+            </ul>
+            
+            <!-- Tabs content -->
+            <div class="tab-content" id="profileTabsContent">
+                <!-- Personal Details Tab -->
+                <div class="tab-pane fade show active" id="details" role="tabpanel" aria-labelledby="details-tab">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Dane osobowe</h5>
+                            <dl class="row">
+                                <dt class="col-sm-4">Imię i nazwisko</dt>
+                                <dd class="col-sm-8">{{ user.get_full_name|default:"Nie podano" }}</dd>
+                                
+                                <dt class="col-sm-4">Email</dt>
+                                <dd class="col-sm-8">{{ user.email }}</dd>
+                                
+                                <dt class="col-sm-4">Telefon</dt>
+                                <dd class="col-sm-8">{{ user.profile.phone_number|default:"Nie podano" }}</dd>
+                                
+                                <dt class="col-sm-4">Data urodzenia</dt>
+                                <dd class="col-sm-8">
+                                    {% if user.profile.date_of_birth %}
+                                        {{ user.profile.date_of_birth|date:"d.m.Y" }}
+                                    {% else %}
+                                        Nie podano
+                                    {% endif %}
+                                </dd>
+                                
+                                <dt class="col-sm-4">Adres</dt>
+                                <dd class="col-sm-8">
+                                    {% if user.profile.address %}
+                                        {{ user.profile.address|linebreaksbr }}
+                                    {% else %}
+                                        Nie podano
+                                    {% endif %}
+                                </dd>
+                            </dl>
+                            <a href="{% url 'accounts:profile_edit' %}" class="btn btn-primary">
+                                <i class="fas fa-edit me-1"></i> Edytuj dane
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Borrowings Tab -->
+                <div class="tab-pane fade" id="borrowings" role="tabpanel" aria-labelledby="borrowings-tab">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Aktywne wypożyczenia</h5>
+                            {% if active_borrowings %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Tytuł</th>
+                                                <th>Data wypożyczenia</th>
+                                                <th>Termin zwrotu</th>
+                                                <th>Status</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for borrowing in active_borrowings %}
+                                            <tr>
+                                                <td>{{ borrowing.book.title }}</td>
+                                                <td>{{ borrowing.borrowed_date|date:"d.m.Y" }}</td>
+                                                <td class="{% if borrowing.is_overdue %}text-danger fw-bold{% endif %}">
+                                                    {{ borrowing.due_date|date:"d.m.Y" }}
+                                                    {% if borrowing.is_overdue %}
+                                                        <span class="badge bg-danger ms-2">Przeterminowane</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-{{ borrowing.get_status_display|lower }}">
+                                                        {{ borrowing.get_status_display }}
+                                                    </span>
+                                                </td>
+                                                <td class="text-end">
+                                                    <a href="#" class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="#" class="btn btn-sm btn-outline-success">
+                                                        <i class="fas fa-undo"></i> Zwróć
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted">Brak aktywnych wypożyczeń</p>
+                                    <a href="{% url 'book_list' %}" class="btn btn-primary">Przeglądaj katalog</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- History Tab -->
+                <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Historia wypożyczeń</h5>
+                            {% if borrowing_history %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Tytuł</th>
+                                                <th>Data wypożyczenia</th>
+                                                <th>Data zwrotu</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for borrowing in borrowing_history %}
+                                            <tr>
+                                                <td>{{ borrowing.book.title }}</td>
+                                                <td>{{ borrowing.borrowed_date|date:"d.m.Y" }}</td>
+                                                <td>{{ borrowing.returned_date|date:"d.m.Y"|default:"-" }}</td>
+                                                <td>
+                                                    <span class="badge bg-{{ borrowing.get_status_display|lower }}">
+                                                        {{ borrowing.get_status_display }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted">Brak historii wypożyczeń</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Settings Tab -->
+                <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Ustawienia konta</h5>
+                            
+                            <div class="mb-4">
+                                <h6>Powiadomienia email</h6>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
+                                    <label class="form-check-label" for="emailNotifications">
+                                        Otrzymuj powiadomienia o nowościach i promocjach
+                                    </label>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="dueDateReminders" checked>
+                                    <label class="form-check-label" for="dueDateReminders">
+                                        Przypomnienia o terminie zwrotu książek
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h6>Zarządzanie kontem</h6>
+                                <div class="d-flex gap-2">
+                                    <a href="{% url 'accounts:change_password' %}" class="btn btn-outline-primary">
+                                        <i class="fas fa-key me-1"></i> Zmień hasło
+                                    </a>
+                                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                                        <i class="fas fa-trash-alt me-1"></i> Usuń konto
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-warning">
+                                <h6><i class="fas fa-exclamation-triangle me-2"></i> Strefa niebezpieczna</h6>
+                                <p class="mb-2">Usunięcie konta jest nieodwracalne. Wszystkie Twoje dane zostaną trwale usunięte.</p>
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                                        Usuń moje konto
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteAccountModalLabel">Potwierdź usunięcie konta</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Czy na pewno chcesz usunąć swoje konto? Tej operacji nie można cofnąć.</p>
+                <p class="mb-0">Wszystkie Twoje dane, w tym historia wypożyczeń, zostaną trwale usunięte.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                <form method="post" action="{% url 'accounts:delete_account' %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Tak, usuń moje konto</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Enable tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Activate the current tab based on URL hash
+        if (window.location.hash) {
+            const tabTrigger = document.querySelector(`[data-bs-target="${window.location.hash}"]`);
+            if (tabTrigger) {
+                const tab = new bootstrap.Tab(tabTrigger);
+                tab.show();
+            }
+        }
+    });
+</script>
+{% endblock %}

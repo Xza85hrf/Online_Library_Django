@@ -1,0 +1,25 @@
+{% extends "emails/email_base.html" %}
+
+{% block content %}
+<h2>Potwierdzenie rezerwacji książki</h2>
+
+<p>Witaj {{ user.first_name }},</p>
+
+<p>Dziękujemy za dokonanie rezerwacji książki w naszej bibliotece.</p>
+
+<div class="book-details">
+    <h3>Szczegóły rezerwacji:</h3>
+    <p><strong>Tytuł:</strong> {{ book.title }}</p>
+    <p><strong>Autor:</strong> {% for author in book.authors.all %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+    <p><strong>Data rezerwacji:</strong> {{ reservation_date|date:"d.m.Y" }}</p>
+    <p><strong>Data ważności rezerwacji:</strong> {{ expiry_date|date:"d.m.Y" }}</p>
+</div>
+
+<p>Powiadomimy Cię, gdy książka będzie dostępna do odbioru.</p>
+
+<p>Pamiętaj, że rezerwacja jest ważna do {{ expiry_date|date:"d.m.Y" }}. Po tym terminie rezerwacja zostanie automatycznie anulowana.</p>
+
+<a href="http://localhost:8000/accounts/profile/" class="button">Przejdź do panelu użytkownika</a>
+
+<p>Dziękujemy za korzystanie z naszej biblioteki!</p>
+{% endblock %}

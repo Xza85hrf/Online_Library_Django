@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Test Images - Biblioteka Online{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">Test Images</h1>
+    
+    <h2 class="mt-4">Author Images</h2>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-header">J.K. Rowling</div>
+                <div class="card-body text-center">
+                    <img src="/media/authors/1_J.K._Rowling.jpg" alt="J.K. Rowling" class="img-fluid" style="max-height: 200px;">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-header">George R.R. Martin</div>
+                <div class="card-body text-center">
+                    <img src="/media/authors/2_George_R.R._Martin.jpg" alt="George R.R. Martin" class="img-fluid" style="max-height: 200px;">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-header">Test Author</div>
+                <div class="card-body text-center">
+                    <img src="/media/authors/6_Test_Author_1748197188.jpg" alt="Test Author" class="img-fluid" style="max-height: 200px;">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <h2 class="mt-4">Book Covers</h2>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-header">Test Book</div>
+                <div class="card-body text-center">
+                    <img src="/media/book_covers/9_Test_Book_1748197226.jpg" alt="Test Book" class="img-fluid" style="max-height: 200px;">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <h2 class="mt-4">Publisher Logos</h2>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-header">Test Publisher</div>
+                <div class="card-body text-center">
+                    <img src="/media/publishers/4_Test_Publisher_1748197157.jpg" alt="Test Publisher" class="img-fluid" style="max-height: 200px;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

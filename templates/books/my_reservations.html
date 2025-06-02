@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Moje rezerwacje - Biblioteka Online{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Strona główna</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Moje rezerwacje</li>
+        </ol>
+    </nav>
+    
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h2 mb-3">Moje rezerwacje</h1>
+            <p class="text-muted mb-0">
+                Zarządzaj swoimi aktualnymi i poprzednimi rezerwacjami książek.
+            </p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{% url 'book_list' %}" class="btn btn-primary">
+                <i class="fas fa-book me-2"></i> Przeglądaj katalog
+            </a>
+        </div>
+    </div>
+    
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-4" id="reservationsTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="active-tab" data-bs-toggle="tab" data-bs-target="#active" type="button" role="tab" aria-controls="active" aria-selected="true">
+                Aktywne rezerwacje <span class="badge bg-primary ms-2">{{ active_reservations|length }}</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">
+                Historia rezerwacji <span class="badge bg-secondary ms-2">{{ past_reservations|length }}</span>
+            </button>
+        </li>
+    </ul>
+    
+    <!-- Tab Content -->
+    <div class="tab-content" id="reservationsTabContent">
+        <!-- Active Reservations Tab -->
+        <div class="tab-pane fade show active" id="active" role="tabpanel" aria-labelledby="active-tab">
+            {% if active_reservations %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Książka</th>
+                                <th scope="col">Data rezerwacji</th>
+                                <th scope="col">Data wygaśnięcia</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Akcje</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reservation in active_reservations %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if reservation.book.cover %}
+                                                <img src="{{ reservation.book.cover.url }}" alt="{{ reservation.book.title }}" class="me-3" style="width: 40px; height: 60px; object-fit: cover;">
+                                            {% else %}
+                                                <div class="bg-light me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 60px;">
+                                                    <i class="fas fa-book text-muted"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                <a href="{% url 'book_detail' reservation.book.pk %}" class="text-decoration-none">{{ reservation.book.title }}</a>
+                                                <div class="small text-muted">
+                                                    {% for author in reservation.book.authors.all %}
+                                                        {{ author.name }}{% if not forloop.last %}, {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ reservation.reservation_date }}</td>
+                                    <td>{{ reservation.expiry_date }}</td>
+                                    <td>
+                                        {% if reservation.book.available_copies > 0 %}
+                                            <span class="badge bg-success">Dostępna</span>
+                                        {% else %}
+                                            <span class="badge bg-warning text-dark">Oczekująca</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if reservation.book.available_copies > 0 %}
+                                            <a href="{% url 'borrow_book' reservation.book.pk %}" class="btn btn-sm btn-success me-1">
+                                                <i class="fas fa-book-reader me-1"></i> Wypożycz
+                                            </a>
+                                        {% endif %}
+                                        <a href="{% url 'cancel_reservation' reservation.id %}" class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-times me-1"></i> Anuluj
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-info-circle me-3 fa-2x"></i>
+                        <div>
+                            <h5 class="alert-heading mb-1">Brak aktywnych rezerwacji</h5>
+                            <p class="mb-0">Obecnie nie masz żadnych zarezerwowanych książek. Przejdź do katalogu, aby zarezerwować książki.</p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- History Tab -->
+        <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+            {% if past_reservations %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Książka</th>
+                                <th scope="col">Data rezerwacji</th>
+                                <th scope="col">Data wygaśnięcia</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reservation in past_reservations %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if reservation.book.cover %}
+                                                <img src="{{ reservation.book.cover.url }}" alt="{{ reservation.book.title }}" class="me-3" style="width: 40px; height: 60px; object-fit: cover;">
+                                            {% else %}
+                                                <div class="bg-light me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 60px;">
+                                                    <i class="fas fa-book text-muted"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                <a href="{% url 'book_detail' reservation.book.pk %}" class="text-decoration-none">{{ reservation.book.title }}</a>
+                                                <div class="small text-muted">
+                                                    {% for author in reservation.book.authors.all %}
+                                                        {{ author.name }}{% if not forloop.last %}, {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ reservation.reservation_date }}</td>
+                                    <td>{{ reservation.expiry_date }}</td>
+                                    <td>
+                                        {% if reservation.status == 'fulfilled' %}
+                                            <span class="badge bg-success">Zrealizowana</span>
+                                        {% elif reservation.status == 'cancelled' %}
+                                            <span class="badge bg-danger">Anulowana</span>
+                                        {% elif reservation.status == 'expired' %}
+                                            <span class="badge bg-secondary">Wygasła</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-info-circle me-3 fa-2x"></i>
+                        <div>
+                            <h5 class="alert-heading mb-1">Brak historii rezerwacji</h5>
+                            <p class="mb-0">Nie masz jeszcze żadnych zakończonych rezerwacji w historii.</p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

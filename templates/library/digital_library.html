@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Biblioteka Cyfrowa{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h1 class="mb-4">Biblioteka Cyfrowa</h1>
+            
+            <div class="card border-0 shadow-sm mb-5">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <img src="{% static 'images/digital-library.jpg' %}" alt="Digital Library" class="img-fluid rounded shadow" style="max-height: 300px;">
+                    </div>
+                    
+                    <h2 class="h4 mb-4">Nasze zasoby cyfrowe</h2>
+                    <p class="lead">Odkryj naszą rosnącą kolekcję e-booków i zasobów cyfrowych dostępnych online.</p>
+                    
+                    <p>Biblioteka Cyfrowa to nowoczesny sposób na dostęp do wiedzy i literatury. Oferujemy:</p>
+                    
+                    <div class="row mt-5">
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body p-4">
+                                    <div class="mb-3 text-center">
+                                        <i class="fas fa-book-reader fa-3x text-primary"></i>
+                                    </div>
+                                    <h3 class="h5 mb-3 text-center">E-booki</h3>
+                                    <p class="text-muted">Ponad 5000 e-booków dostępnych do wypożyczenia w formatach EPUB, MOBI i PDF. Możesz czytać je na swoim czytniku, tablecie lub smartfonie.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body p-4">
+                                    <div class="mb-3 text-center">
+                                        <i class="fas fa-headphones fa-3x text-primary"></i>
+                                    </div>
+                                    <h3 class="h5 mb-3 text-center">Audiobooki</h3>
+                                    <p class="text-muted">Kolekcja audiobooków czytanych przez profesjonalnych lektorów. Idealne rozwiązanie podczas podróży lub wykonywania codziennych czynności.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body p-4">
+                                    <div class="mb-3 text-center">
+                                        <i class="fas fa-newspaper fa-3x text-primary"></i>
+                                    </div>
+                                    <h3 class="h5 mb-3 text-center">Czasopisma cyfrowe</h3>
+                                    <p class="text-muted">Dostęp do najnowszych wydań popularnych czasopism i magazynów. Czytaj na swoim urządzeniu, gdziekolwiek jesteś.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body p-4">
+                                    <div class="mb-3 text-center">
+                                        <i class="fas fa-database fa-3x text-primary"></i>
+                                    </div>
+                                    <h3 class="h5 mb-3 text-center">Bazy danych</h3>
+                                    <p class="text-muted">Dostęp do specjalistycznych baz danych naukowych i edukacyjnych. Idealne dla studentów i naukowców.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h2 class="h4 mb-4 mt-5">Jak korzystać z Biblioteki Cyfrowej?</h2>
+                    <ol class="list-group list-group-numbered mb-4">
+                        <li class="list-group-item bg-transparent">Zaloguj się na swoje konto w Bibliotece Online</li>
+                        <li class="list-group-item bg-transparent">Przejdź do sekcji "Biblioteka Cyfrowa" w menu</li>
+                        <li class="list-group-item bg-transparent">Wyszukaj interesujące Cię pozycje</li>
+                        <li class="list-group-item bg-transparent">Wypożycz e-booka lub audiobooka na okres 14 dni</li>
+                        <li class="list-group-item bg-transparent">Pobierz plik lub czytaj online</li>
+                    </ol>
+                    
+                    <div class="alert alert-info mt-4">
+                        <i class="fas fa-info-circle me-2"></i> Potrzebujesz pomocy z czytnikiem e-booków? Oferujemy wypożyczenie czytników Kindle i PocketBook na okres do 30 dni. Zapytaj bibliotekarza o szczegóły.
+                    </div>
+                    
+                    <div class="text-center mt-5">
+                        <a href="{% url 'book_list' %}" class="btn btn-primary">Przeglądaj katalog</a>
+                        <a href="{% url 'home' %}" class="btn btn-outline-primary ms-2">Wróć do strony głównej</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

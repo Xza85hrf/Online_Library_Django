@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - Biblioteka Online{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="card-title mb-0">{{ title }}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Uwaga!</strong> Czy na pewno chcesz usunąć wydawnictwo "{{ publisher.name }}"? Ta operacja jest nieodwracalna.
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5>Informacje o wydawnictwie:</h5>
+                        <dl class="row">
+                            <dt class="col-sm-3">Nazwa:</dt>
+                            <dd class="col-sm-9">{{ publisher.name }}</dd>
+                            
+                            {% if publisher.founded_date %}
+                            <dt class="col-sm-3">Data założenia:</dt>
+                            <dd class="col-sm-9">{{ publisher.founded_date|date:"d.m.Y" }}</dd>
+                            {% endif %}
+                            
+                            <dt class="col-sm-3">Liczba książek:</dt>
+                            <dd class="col-sm-9">{{ publisher.books.count }}</dd>
+                        </dl>
+                    </div>
+                    
+                    {% if publisher.books.exists %}
+                    <div class="alert alert-danger mb-4">
+                        <i class="fas fa-book me-2"></i>
+                        <strong>Uwaga!</strong> To wydawnictwo ma powiązane książki w bazie danych. Usunięcie wydawnictwa może wpłynąć na te książki.
+                    </div>
+                    {% endif %}
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'publisher_detail' publisher.id %}" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-times me-1"></i> Anuluj
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash-alt me-1"></i> Usuń wydawnictwo
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

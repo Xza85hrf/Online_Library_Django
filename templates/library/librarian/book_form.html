@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - Biblioteka Online{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="card-title mb-0">{{ title }}</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.title.id_for_label }}" class="form-label">Tytuł książki</label>
+                            {{ form.title }}
+                            {% if form.title.errors %}
+                            <div class="text-danger">
+                                {% for error in form.title.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% if form.title.help_text %}
+                            <small class="form-text text-muted">{{ form.title.help_text }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.authors.id_for_label }}" class="form-label">Autorzy</label>
+                            {{ form.authors }}
+                            {% if form.authors.errors %}
+                            <div class="text-danger">
+                                {% for error in form.authors.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% if form.authors.help_text %}
+                            <small class="form-text text-muted">{{ form.authors.help_text }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.publisher.id_for_label }}" class="form-label">Wydawnictwo</label>
+                            {{ form.publisher }}
+                            {% if form.publisher.errors %}
+                            <div class="text-danger">
+                                {% for error in form.publisher.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% if form.publisher.help_text %}
+                            <small class="form-text text-muted">{{ form.publisher.help_text }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.cover.id_for_label }}" class="form-label">Okładka</label>
+                            {% if book.cover %}
+                            <div class="mb-2">
+                                <img src="{{ book.cover.url }}" alt="{{ book.title }}" class="img-thumbnail" style="max-height: 200px;">
+                            </div>
+                            {% endif %}
+                            {{ form.cover }}
+                            {% if form.cover.errors %}
+                            <div class="text-danger">
+                                {% for error in form.cover.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% if form.cover.help_text %}
+                            <small class="form-text text-muted">{{ form.cover.help_text }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">Opis</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                            <div class="text-danger">
+                                {% for error in form.description.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% if form.description.help_text %}
+                            <small class="form-text text-muted">{{ form.description.help_text }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.publication_date.id_for_label }}" class="form-label">Data publikacji</label>
+                                {{ form.publication_date }}
+                                {% if form.publication_date.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.publication_date.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                {% if form.publication_date.help_text %}
+                                <small class="form-text text-muted">{{ form.publication_date.help_text }}</small>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.isbn.id_for_label }}" class="form-label">ISBN</label>
+                                {{ form.isbn }}
+                                {% if form.isbn.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.isbn.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                {% if form.isbn.help_text %}
+                                <small class="form-text text-muted">{{ form.isbn.help_text }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.pages.id_for_label }}" class="form-label">Liczba stron</label>
+                                {{ form.pages }}
+                                {% if form.pages.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.pages.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                {% if form.pages.help_text %}
+                                <small class="form-text text-muted">{{ form.pages.help_text }}</small>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.language.id_for_label }}" class="form-label">Język</label>
+                                {{ form.language }}
+                                {% if form.language.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.language.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                {% if form.language.help_text %}
+                                <small class="form-text text-muted">{{ form.language.help_text }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.genres.id_for_label }}" class="form-label">Gatunki</label>
+                            {{ form.genres }}
+                            {% if form.genres.errors %}
+                            <div class="text-danger">
+                                {% for error in form.genres.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% if form.genres.help_text %}
+                            <small class="form-text text-muted">{{ form.genres.help_text }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.available_copies.id_for_label }}" class="form-label">Dostępne egzemplarze</label>
+                                {{ form.available_copies }}
+                                {% if form.available_copies.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.available_copies.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                {% if form.available_copies.help_text %}
+                                <small class="form-text text-muted">{{ form.available_copies.help_text }}</small>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.total_copies.id_for_label }}" class="form-label">Całkowita liczba egzemplarzy</label>
+                                {{ form.total_copies }}
+                                {% if form.total_copies.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.total_copies.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                                {% if form.total_copies.help_text %}
+                                <small class="form-text text-muted">{{ form.total_copies.help_text }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'book_list' %}" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-times me-1"></i> Anuluj
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Zapisz
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Wydarzenia{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h1 class="mb-4">Wydarzenia w bibliotece</h1>
+            
+            <div class="alert alert-info mb-4">
+                <i class="fas fa-info-circle me-2"></i> Poniżej znajduje się lista nadchodzących wydarzeń w naszej bibliotece. Zapraszamy do udziału!
+            </div>
+            
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="event-date text-center me-4">
+                            <div class="month bg-primary text-white rounded-top px-3 py-1">Cze</div>
+                            <div class="day bg-light rounded-bottom px-3 py-2 fw-bold">15</div>
+                        </div>
+                        <div>
+                            <h2 class="h4 mb-1">Spotkanie autorskie z Olgą Tokarczuk</h2>
+                            <p class="text-muted mb-0"><i class="far fa-clock me-2"></i>18:00 - 20:00</p>
+                        </div>
+                    </div>
+                    <p>Zapraszamy na spotkanie z laureatką Nagrody Nobla w dziedzinie literatury. Podczas spotkania autorka opowie o swojej najnowszej książce oraz odpowie na pytania czytelników.</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-success">Wstęp wolny</span>
+                        <button class="btn btn-outline-primary btn-sm">Zapisz się</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="event-date text-center me-4">
+                            <div class="month bg-primary text-white rounded-top px-3 py-1">Cze</div>
+                            <div class="day bg-light rounded-bottom px-3 py-2 fw-bold">22</div>
+                        </div>
+                        <div>
+                            <h2 class="h4 mb-1">Warsztaty literackie dla młodzieży</h2>
+                            <p class="text-muted mb-0"><i class="far fa-clock me-2"></i>16:00 - 18:00</p>
+                        </div>
+                    </div>
+                    <p>Warsztaty skierowane do młodzieży w wieku 13-18 lat, podczas których uczestnicy poznają podstawy tworzenia opowiadań i wierszy. Zajęcia poprowadzi doświadczony pisarz i pedagog.</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-primary">Wymagana rejestracja</span>
+                        <button class="btn btn-outline-primary btn-sm">Zapisz się</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="event-date text-center me-4">
+                            <div class="month bg-primary text-white rounded-top px-3 py-1">Lip</div>
+                            <div class="day bg-light rounded-bottom px-3 py-2 fw-bold">05</div>
+                        </div>
+                        <div>
+                            <h2 class="h4 mb-1">Dyskusyjny Klub Książki</h2>
+                            <p class="text-muted mb-0"><i class="far fa-clock me-2"></i>17:30 - 19:30</p>
+                        </div>
+                    </div>
+                    <p>Comiesięczne spotkanie Dyskusyjnego Klubu Książki. Tym razem rozmawiamy o książce "Pachinko" autorstwa Min Jin Lee. Zapraszamy wszystkich miłośników literatury!</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-success">Wstęp wolny</span>
+                        <button class="btn btn-outline-primary btn-sm">Zapisz się</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <a href="{% url 'home' %}" class="btn btn-primary">Wróć do strony głównej</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

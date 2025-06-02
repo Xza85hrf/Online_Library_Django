@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+{% load static %}
+{% load i18n %}
+
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Biblioteka Online{% endblock %}</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background-color: #4F6F52; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); padding: 0.8rem 0;">
+        <div class="container-xl">
+            <a class="navbar-brand" href="{% url 'home' %}" style="font-weight: 700; font-size: 1.5rem; color: #ffffff !important;">
+                <i class="fas fa-book-open me-2"></i>Biblioteka Online
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Główne menu nawigacyjne -->
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}" style="color: rgba(255, 255, 255, 0.9) !important; font-weight: 500; padding: 0.5rem 1rem;">Strona główna</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'book_list' %}" style="color: rgba(255, 255, 255, 0.9) !important; font-weight: 500; padding: 0.5rem 1rem;">Katalog książek</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'author_list' %}" style="color: rgba(255, 255, 255, 0.9) !important; font-weight: 500; padding: 0.5rem 1rem;">Autorzy</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'publisher_list' %}" style="color: rgba(255, 255, 255, 0.9) !important; font-weight: 500; padding: 0.5rem 1rem;">Wydawnictwa</a>
+                    </li>
+                </ul>
+                
+                <!-- Menu użytkownika po prawej stronie -->
+                <ul class="navbar-nav d-flex align-items-center">
+                    {% if user.is_authenticated %}
+                    <!-- Pojedyncze menu użytkownika z wszystkimi opcjami -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle btn btn-sm" href="#" id="userDropdown" role="button" 
+                           data-bs-toggle="dropdown" aria-expanded="false" style="color: rgba(255, 255, 255, 0.95) !important; font-weight: 500; background-color: rgba(255, 255, 255, 0.1); border-radius: 4px; padding: 0.375rem 0.75rem;">
+                            <i class="fas fa-user-circle me-1"></i> {{ user.get_full_name|default:user.email }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <!-- Sekcja profilu -->
+                            <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="fas fa-id-card me-2"></i>Mój profil</a></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:change_password' %}"><i class="fas fa-key me-2"></i>Zmień hasło</a></li>
+                            
+                            <!-- Sekcja książek -->
+                            <li><hr class="dropdown-divider"></li>
+                            <li><h6 class="dropdown-header">Moje książki</h6></li>
+                            <li><a class="dropdown-item" href="{% url 'my_loans' %}"><i class="fas fa-bookmark me-2"></i>Moje wypożyczenia</a></li>
+                            <li><a class="dropdown-item" href="{% url 'my_reservations' %}"><i class="fas fa-clock me-2"></i>Moje rezerwacje</a></li>
+                            
+                            <!-- Sekcja administracyjna dla różnych ról -->
+                            {% if user.profile.role == 'admin' or user.profile.role == 'librarian' or user.is_staff %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><h6 class="dropdown-header">Panel administracyjny</h6></li>
+                            
+                            {% if user.profile.role == 'admin' or user.is_superuser %}
+                            <!-- Opcje tylko dla administratora -->
+                            <li><a class="dropdown-item" href="{% url 'admin:index' %}"><i class="fas fa-tachometer-alt me-2"></i>Panel admina</a></li>
+                            <li><a class="dropdown-item" href="/reports/"><i class="fas fa-chart-bar me-2"></i>Raporty i statystyki</a></li>
+                            {% endif %}
+                            
+                            {% if user.profile.role == 'admin' or user.profile.role == 'librarian' or user.is_staff %}
+                            <!-- Opcje dla bibliotekarza i administratora -->
+                            <li><a class="dropdown-item" href="{% url 'librarian_dashboard' %}"><i class="fas fa-tachometer-alt me-2"></i>Panel bibliotekarza</a></li>
+                            <li><a class="dropdown-item" href="{% url 'book_create' %}"><i class="fas fa-plus-circle me-2"></i>Dodaj książkę</a></li>
+                            <li><a class="dropdown-item" href="{% url 'author_create' %}"><i class="fas fa-user-plus me-2"></i>Dodaj autora</a></li>
+                            <li><a class="dropdown-item" href="{% url 'publisher_create' %}"><i class="fas fa-building me-2"></i>Dodaj wydawnictwo</a></li>
+                            <li><a class="dropdown-item" href="{% url 'my_loans' %}"><i class="fas fa-exchange-alt me-2"></i>Zarządzaj wypożyczeniami</a></li>
+                            {% endif %}
+                            {% endif %}
+                            
+                            <!-- Wylogowanie -->
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Wyloguj się</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item mx-1">
+                        <a class="nav-link btn btn-outline-light btn-sm" href="{% url 'login' %}" style="color: rgba(255, 255, 255, 0.9) !important; font-weight: 500; margin-top: 2px;">
+                            <i class="fas fa-sign-in-alt me-1"></i> Zaloguj się
+                        </a>
+                    </li>
+                    <li class="nav-item ms-1">
+                        <a class="nav-link btn btn-light btn-sm text-success" href="{% url 'register' %}" style="font-weight: 500; margin-top: 2px;">
+                            <i class="fas fa-user-plus me-1"></i> Zarejestruj się
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container-xl my-4">
+        <!-- Messages -->
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}
+        <!-- Page content will be here -->
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer mt-5" style="background-color: #2C3333; color: #ffffff; padding: 2rem 0;">
+        <div class="container">
+            <div class="row py-5">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <h5 class="footer-heading">Biblioteka Online</h5>
+                    <p class="text-muted">Twoje źródło wiedzy i rozrywki. Odkrywaj, czytaj i rozwijaj się razem z nami.</p>
+                    <div class="social-icons mt-3">
+                        <a href="{% url 'home' %}" class="me-2"><i class="fab fa-facebook-f"></i></a>
+                        <a href="{% url 'home' %}" class="me-2"><i class="fab fa-twitter"></i></a>
+                        <a href="{% url 'home' %}" class="me-2"><i class="fab fa-instagram"></i></a>
+                        <a href="{% url 'home' %}"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
+                    <h5 class="footer-heading">Katalog</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'book_list' %}">Książki</a></li>
+                        <li><a href="{% url 'author_list' %}">Autorzy</a></li>
+                        <li><a href="{% url 'publisher_list' %}">Wydawnictwa</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
+                    <h5 class="footer-heading">Dla czytelników</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'how_to_borrow' %}">Jak wypożyczyć</a></li>
+                        <li><a href="{% url 'rules' %}">Regulamin</a></li>
+                        <li><a href="{% url 'opening_hours' %}">Godziny otwarcia</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4">
+                    <h5 class="footer-heading">Newsletter</h5>
+                    <p class="text-muted">Zapisz się, aby otrzymywać informacje o nowościach.</p>
+                    <form method="get" action="{% url 'home' %}">
+                        <div class="input-group mb-3">
+                            <input type="email" class="form-control" placeholder="Twój email" aria-label="Email address">
+                            <button class="btn btn-primary" type="submit">Zapisz się</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom py-3 text-center border-top">
+                <p class="mb-0">&copy; {% now "Y" %} Biblioteka Online. Wszelkie prawa zastrzeżone.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{% static 'js/script.js' %}"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
