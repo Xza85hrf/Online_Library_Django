@@ -3,8 +3,8 @@
 ## 👥 Współtwórcy
 
 - [Xza85hrf](https://github.com/Xza85hrf) - Główny deweloper
-- [Contributor 1](https://github.com/contributor1) - Deweloper
-- [Contributor 2](https://github.com/contributor2) - Deweloper
+- [mateuszur](https://github.com/mateuszur) - Deweloper
+- [KrystianRozwag](https://github.com/KrystianRozwag) - Deweloper
 
 Projekt Django do zarządzania biblioteką online z funkcjami wypożyczania, rezerwacji, recenzji książek oraz generowania obrazów AI.
 
